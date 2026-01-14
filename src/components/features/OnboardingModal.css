@@ -1,0 +1,255 @@
+.onboarding-modal {
+    max-width: 560px;
+    width: 95%;
+    padding: var(--space-xl);
+}
+
+.onboarding-progress {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    flex: 1;
+    position: relative;
+}
+
+.progress-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 60%;
+    width: 80%;
+    height: 2px;
+    background: var(--border-color);
+}
+
+.progress-step.completed:not(:last-child)::after {
+    background: var(--success);
+}
+
+.progress-number {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    position: relative;
+    z-index: 1;
+}
+
+.progress-step.active .progress-number {
+    background: var(--gradient-primary);
+    border-color: var(--accent-primary);
+    color: white;
+}
+
+.progress-step.completed .progress-number {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+.progress-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.progress-step.active .progress-label {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.step-content {
+    min-height: 300px;
+}
+
+.step-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.step-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: var(--space-md);
+}
+
+.step-icon.success {
+    animation: pulse 1s ease infinite;
+}
+
+.step-header h3 {
+    margin-bottom: var(--space-sm);
+}
+
+.step-header p {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+}
+
+.form-group {
+    margin-bottom: var(--space-md);
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+.location-form {
+    padding: var(--space-md);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+}
+
+.location-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--warning);
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.add-location-btn {
+    width: 100%;
+    border: 1px dashed var(--border-color);
+}
+
+.add-location-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.platforms-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+}
+
+.platform-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.platform-card:hover {
+    border-color: var(--border-hover);
+}
+
+.platform-card.connected {
+    border-color: var(--success);
+    background: rgba(56, 239, 125, 0.1);
+}
+
+.platform-icon-large {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.platform-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.platform-status {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.platform-card.connected .platform-status {
+    color: var(--success);
+}
+
+.summary-card {
+    padding: var(--space-lg);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-label {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+}
+
+.summary-value {
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.onboarding-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.onboarding-actions .btn-primary {
+    min-width: 120px;
+}
+
+@media (max-width: 480px) {
+    .platforms-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .onboarding-progress {
+        gap: var(--space-xs);
+    }
+
+    .progress-step:not(:last-child)::after {
+        display: none;
+    }
+}

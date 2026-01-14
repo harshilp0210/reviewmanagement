@@ -1,0 +1,119 @@
+.customer-logos-section {
+    padding: var(--space-xl) 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.customer-logos-content {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+}
+
+.customer-logos-content.animate-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.customer-logos-label {
+    text-align: center;
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    margin-bottom: var(--space-lg);
+}
+
+.customer-logos-label strong {
+    color: var(--text-secondary);
+}
+
+.customer-logos-track {
+    overflow: hidden;
+    mask-image: linear-gradient(to right,
+            transparent 0%,
+            black 10%,
+            black 90%,
+            transparent 100%);
+    -webkit-mask-image: linear-gradient(to right,
+            transparent 0%,
+            black 10%,
+            black 90%,
+            transparent 100%);
+}
+
+.customer-logos-scroll {
+    display: flex;
+    gap: var(--space-2xl);
+    animation: scrollLogos 30s linear infinite;
+    width: max-content;
+}
+
+.customer-logo-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-shrink: 0;
+}
+
+.customer-logo-placeholder {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.customer-logo-item:hover .customer-logo-placeholder {
+    border-color: var(--accent-secondary);
+    background: var(--bg-card-hover);
+}
+
+.customer-initial {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.customer-name {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+@keyframes scrollLogos {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@media (max-width: 768px) {
+    .customer-logos-section {
+        padding: var(--space-lg) 0;
+    }
+
+    .customer-logo-placeholder {
+        width: 48px;
+        height: 48px;
+    }
+
+    .customer-initial {
+        font-size: 1.25rem;
+    }
+
+    .customer-logos-scroll {
+        gap: var(--space-xl);
+    }
+}
