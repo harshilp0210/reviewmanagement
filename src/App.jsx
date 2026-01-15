@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import './index.css';
 
-// Pages
+// Context
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+// Landing Pages
 import HomePage from './pages/HomePage';
 import FeaturesPage from './pages/FeaturesPage';
 import HowItWorksPage from './pages/HowItWorksPage';
@@ -13,11 +16,19 @@ import PricingPage from './pages/PricingPage';
 import BenefitsPage from './pages/BenefitsPage';
 import NotFoundPage from './pages/NotFoundPage';
 
-// Feature Components
-import OnboardingModal from './components/features/OnboardingModal';
+// Dashboard
+import DashboardLayout from './components/dashboard/DashboardLayout';
+import DashboardHome from './pages/dashboard/DashboardHome';
+import ReviewsInbox from './pages/dashboard/ReviewsInbox';
+import ReviewRequests from './pages/dashboard/ReviewRequests';
+import Analytics from './pages/dashboard/Analytics';
+import Settings from './pages/dashboard/Settings';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
-// UI Components
+// Components
+import OnboardingModal from './components/features/OnboardingModal';
 import MobileMenu from './components/ui/MobileMenu';
+import LoginModal from './components/auth/LoginModal';
 import { ToastProvider, useToast } from './components/ui/Toast';
 
 // Scroll to top on route change
@@ -32,10 +43,13 @@ function ScrollToTop() {
 }
 
 // Navigation Component
-function Navigation({ onMenuOpen, onGetStarted }) {
+function Navigation({ onMenuOpen, onGetStarted, onSignIn }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [scrolled, setScrolled] = useState(false);
 
+  // All hooks must be called before any conditional returns
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -44,6 +58,11 @@ function Navigation({ onMenuOpen, onGetStarted }) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Hide landing nav on dashboard pages
+  if (location.pathname.startsWith('/dashboard')) {
+    return null;
+  }
 
   const isActive = (path) => location.pathname === path ? 'nav-link active' : 'nav-link';
 
@@ -62,10 +81,18 @@ function Navigation({ onMenuOpen, onGetStarted }) {
           <Link to="/blog" className={isActive('/blog')}>Blog</Link>
         </div>
         <div className="nav-actions">
-          <button className="btn btn-ghost">Sign In</button>
-          <button className="btn btn-primary" onClick={onGetStarted}>
-            Get Started
-          </button>
+          {isAuthenticated ? (
+            <button className="btn btn-primary" onClick={() => navigate('/dashboard')}>
+              Dashboard
+            </button>
+          ) : (
+            <>
+              <button className="btn btn-ghost" onClick={onSignIn}>Sign In</button>
+              <button className="btn btn-primary" onClick={onGetStarted}>
+                Get Started
+              </button>
+            </>
+          )}
           <button
             className="hamburger-btn"
             onClick={onMenuOpen}
@@ -86,7 +113,9 @@ function Navigation({ onMenuOpen, onGetStarted }) {
 // Back to Top Button
 function BackToTop() {
   const [visible, setVisible] = useState(false);
+  const location = useLocation();
 
+  // All hooks must be called before any conditional returns
   useEffect(() => {
     const handleScroll = () => {
       setVisible(window.scrollY > 500);
@@ -95,6 +124,11 @@ function BackToTop() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Hide on dashboard
+  if (location.pathname.startsWith('/dashboard')) {
+    return null;
+  }
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -114,6 +148,7 @@ function BackToTop() {
 function AppContent() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const toast = useToast();
 
   const handleContactSuccess = () => {
@@ -121,6 +156,7 @@ function AppContent() {
   };
 
   const handleGetStarted = () => setShowOnboarding(true);
+  const handleSignIn = () => setShowLoginModal(true);
 
   return (
     <div className="app">
@@ -129,10 +165,12 @@ function AppContent() {
       <Navigation
         onMenuOpen={() => setShowMobileMenu(true)}
         onGetStarted={handleGetStarted}
+        onSignIn={handleSignIn}
       />
 
       <main>
         <Routes>
+          {/* Landing Pages */}
           <Route path="/" element={<HomePage onGetStarted={handleGetStarted} />} />
           <Route path="/why-reviewmanager" element={<BenefitsPage onGetStarted={handleGetStarted} />} />
           <Route path="/features" element={<FeaturesPage onGetStarted={handleGetStarted} />} />
@@ -141,6 +179,20 @@ function AppContent() {
           <Route path="/integrations" element={<IntegrationsPage onGetStarted={handleGetStarted} />} />
           <Route path="/blog" element={<BlogPage onGetStarted={handleGetStarted} />} />
           <Route path="/pricing" element={<PricingPage onSuccess={handleContactSuccess} onGetStarted={handleGetStarted} />} />
+
+          {/* Dashboard (Protected) */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<DashboardHome />} />
+            <Route path="inbox" element={<ReviewsInbox />} />
+            <Route path="requests" element={<ReviewRequests />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
+
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
@@ -158,6 +210,11 @@ function AppContent() {
       {showOnboarding && (
         <OnboardingModal onClose={() => setShowOnboarding(false)} />
       )}
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </div>
   );
 }
@@ -166,7 +223,9 @@ function App() {
   return (
     <ToastProvider>
       <Router>
-        <AppContent />
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
       </Router>
     </ToastProvider>
   );

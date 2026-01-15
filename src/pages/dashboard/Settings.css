@@ -1,0 +1,334 @@
+.settings-page {
+    max-width: 1200px;
+}
+
+.settings-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: var(--space-xl);
+}
+
+.settings-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.settings-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background: none;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.settings-nav-btn:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.settings-nav-btn.active {
+    background: rgba(30, 87, 153, 0.2);
+    color: var(--accent-primary);
+}
+
+.settings-nav-btn span {
+    font-size: 1.125rem;
+}
+
+.settings-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+}
+
+.settings-section h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-xs);
+}
+
+.section-desc {
+    color: var(--text-muted);
+    margin-bottom: var(--space-xl);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-xl);
+}
+
+/* Platforms */
+.platforms-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+}
+
+.platform-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.platform-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.platform-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    color: white;
+    font-size: 1.25rem;
+}
+
+.platform-reviews {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+
+/* Team */
+.team-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.team-member {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+}
+
+.member-avatar {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    font-weight: 700;
+    color: white;
+    font-size: 0.875rem;
+}
+
+.member-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.member-name {
+    font-weight: 600;
+}
+
+.member-email {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+
+.member-role {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+}
+
+.member-role.admin {
+    background: rgba(156, 39, 176, 0.2);
+    color: #9c27b0;
+}
+
+.member-role.manager {
+    background: rgba(30, 87, 153, 0.2);
+    color: var(--accent-primary);
+}
+
+.member-role.staff {
+    background: rgba(45, 134, 66, 0.2);
+    color: var(--success);
+}
+
+/* Notifications */
+.notification-settings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+}
+
+.notification-item h4 {
+    font-size: 0.9375rem;
+    margin-bottom: 0.25rem;
+}
+
+.notification-item p {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    border-radius: 26px;
+    transition: 0.3s;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.toggle input:checked+.toggle-slider {
+    background: var(--success);
+}
+
+.toggle input:checked+.toggle-slider:before {
+    transform: translateX(22px);
+}
+
+/* Billing */
+.billing-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+}
+
+.current-plan {
+    padding: var(--space-xl);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.plan-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+}
+
+.current-plan h4 {
+    font-size: 2rem;
+    margin-bottom: var(--space-md);
+}
+
+.current-plan ul {
+    list-style: none;
+    margin-bottom: var(--space-lg);
+}
+
+.current-plan li {
+    padding: var(--space-xs) 0;
+    color: var(--text-secondary);
+}
+
+.payment-info {
+    padding: var(--space-xl);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.payment-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    margin: var(--space-md) 0;
+}
+
+/* Account Form */
+.account-form {
+    max-width: 600px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+@media (max-width: 768px) {
+    .settings-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-nav {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .platforms-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .billing-card {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
