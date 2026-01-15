@@ -1,66 +1,72 @@
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
-function Footer({ onGetStarted }) {
+function Footer({ onGetStarted, showCTA = true }) {
+    const currentYear = new Date().getFullYear();
+
     return (
         <footer className="footer">
-            {/* CTA Section */}
-            <div className="footer-cta">
-                <div className="container">
-                    <div className="cta-content glass-card">
-                        <div className="cta-text">
-                            <h2>Ready to Transform Your Online Reputation?</h2>
-                            <p>Join 2,500+ businesses already using ReviewManager to dominate their local market.</p>
-                        </div>
-                        <div className="cta-actions">
-                            <button className="btn btn-primary btn-lg" onClick={onGetStarted}>
-                                Start Free Trial
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </button>
-                            <button className="btn btn-secondary btn-lg">
-                                Book a Demo
-                            </button>
+            {/* CTA Section - Optional */}
+            {showCTA && (
+                <div className="footer-cta">
+                    <div className="container">
+                        <div className="cta-content glass-card">
+                            <div className="cta-text">
+                                <h2>Ready to Transform Your Online Reputation?</h2>
+                                <p>Join 2,500+ businesses already using ReviewManager to dominate their local market.</p>
+                            </div>
+                            <div className="cta-actions">
+                                <button className="btn btn-primary btn-lg" onClick={onGetStarted}>
+                                    Start Free Trial
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M5 12h14M12 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                                <button className="btn btn-secondary btn-lg">
+                                    Book a Demo
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Footer Links */}
             <div className="footer-main">
                 <div className="container">
                     <div className="footer-grid">
                         <div className="footer-brand">
-                            <div className="footer-logo">
+                            <Link to="/" className="footer-logo">
                                 <img src="/logo.png" alt="ReviewManager" className="brand-logo footer-brand-logo" />
-                            </div>
+                            </Link>
                             <p className="footer-tagline">
                                 The all-in-one platform for managing your online reviews and building a stellar reputation.
                             </p>
                             <div className="social-links">
-                                <a href="#" className="social-link">𝕏</a>
-                                <a href="#" className="social-link">in</a>
-                                <a href="#" className="social-link">f</a>
+                                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Twitter">𝕏</a>
+                                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="LinkedIn">in</a>
+                                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Facebook">f</a>
+                                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Instagram">📷</a>
                             </div>
                         </div>
 
                         <div className="footer-links-group">
                             <h4>Product</h4>
                             <ul>
-                                <li><a href="#">Features</a></li>
-                                <li><a href="#">Pricing</a></li>
-                                <li><a href="#">Integrations</a></li>
-                                <li><a href="#">API</a></li>
+                                <li><Link to="/features">Features</Link></li>
+                                <li><Link to="/pricing">Pricing</Link></li>
+                                <li><Link to="/integrations">Integrations</Link></li>
+                                <li><Link to="/how-it-works">How It Works</Link></li>
                             </ul>
                         </div>
 
                         <div className="footer-links-group">
                             <h4>Resources</h4>
                             <ul>
-                                <li><a href="#">Blog</a></li>
+                                <li><Link to="/blog">Blog</Link></li>
                                 <li><a href="#">Help Center</a></li>
-                                <li><a href="#">Case Studies</a></li>
-                                <li><a href="#">Webinars</a></li>
+                                <li><Link to="/case-studies">Case Studies</Link></li>
+                                <li><a href="#">Documentation</a></li>
                             </ul>
                         </div>
 
@@ -69,8 +75,8 @@ function Footer({ onGetStarted }) {
                             <ul>
                                 <li><a href="#">About Us</a></li>
                                 <li><a href="#">Careers</a></li>
-                                <li><a href="#">Contact</a></li>
-                                <li><a href="#">Press</a></li>
+                                <li><Link to="/pricing">Contact</Link></li>
+                                <li><a href="#">Press Kit</a></li>
                             </ul>
                         </div>
 
@@ -80,14 +86,20 @@ function Footer({ onGetStarted }) {
                                 <li><a href="#">Privacy Policy</a></li>
                                 <li><a href="#">Terms of Service</a></li>
                                 <li><a href="#">Cookie Policy</a></li>
-                                <li><a href="#">GDPR</a></li>
+                                <li><a href="#">GDPR Compliance</a></li>
                             </ul>
                         </div>
                     </div>
 
                     <div className="footer-bottom">
-                        <p>© 2024 ReviewManager. All rights reserved.</p>
-                        <p className="footer-made">Made with 💜 for businesses everywhere</p>
+                        <p>© {currentYear} ReviewManager. All rights reserved.</p>
+                        <div className="footer-bottom-links">
+                            <a href="#">Sitemap</a>
+                            <span>•</span>
+                            <a href="#">Accessibility</a>
+                            <span>•</span>
+                            <a href="#">Status</a>
+                        </div>
                     </div>
                 </div>
             </div>

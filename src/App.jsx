@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import './index.css';
 
@@ -10,6 +10,7 @@ import CaseStudiesPage from './pages/CaseStudiesPage';
 import IntegrationsPage from './pages/IntegrationsPage';
 import BlogPage from './pages/BlogPage';
 import PricingPage from './pages/PricingPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 // Feature Components
 import OnboardingModal from './components/features/OnboardingModal';
@@ -18,14 +19,35 @@ import OnboardingModal from './components/features/OnboardingModal';
 import MobileMenu from './components/ui/MobileMenu';
 import { ToastProvider, useToast } from './components/ui/Toast';
 
+// Scroll to top on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 // Navigation Component
 function Navigation({ onMenuOpen, onGetStarted }) {
   const location = useLocation();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const isActive = (path) => location.pathname === path ? 'nav-link active' : 'nav-link';
 
   return (
-    <nav className="nav">
+    <nav className={`nav ${scrolled ? 'nav-scrolled' : ''}`}>
       <div className="container flex-between">
         <Link to="/" className="nav-brand">
           <img src="/logo.png" alt="ReviewManager" className="brand-logo" />
@@ -60,6 +82,34 @@ function Navigation({ onMenuOpen, onGetStarted }) {
   );
 }
 
+// Back to Top Button
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setVisible(window.scrollY > 500);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <button
+      className={`back-to-top ${visible ? 'visible' : ''}`}
+      onClick={scrollToTop}
+      aria-label="Back to top"
+    >
+      ↑
+    </button>
+  );
+}
+
 function AppContent() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -69,24 +119,32 @@ function AppContent() {
     toast.success('Message sent successfully! We\'ll get back to you soon.');
   };
 
+  const handleGetStarted = () => setShowOnboarding(true);
+
   return (
     <div className="app">
+      <ScrollToTop />
+
       <Navigation
         onMenuOpen={() => setShowMobileMenu(true)}
-        onGetStarted={() => setShowOnboarding(true)}
+        onGetStarted={handleGetStarted}
       />
 
       <main>
         <Routes>
-          <Route path="/" element={<HomePage onGetStarted={() => setShowOnboarding(true)} />} />
-          <Route path="/features" element={<FeaturesPage />} />
-          <Route path="/how-it-works" element={<HowItWorksPage />} />
-          <Route path="/case-studies" element={<CaseStudiesPage />} />
-          <Route path="/integrations" element={<IntegrationsPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/pricing" element={<PricingPage onSuccess={handleContactSuccess} />} />
+          <Route path="/" element={<HomePage onGetStarted={handleGetStarted} />} />
+          <Route path="/features" element={<FeaturesPage onGetStarted={handleGetStarted} />} />
+          <Route path="/how-it-works" element={<HowItWorksPage onGetStarted={handleGetStarted} />} />
+          <Route path="/case-studies" element={<CaseStudiesPage onGetStarted={handleGetStarted} />} />
+          <Route path="/integrations" element={<IntegrationsPage onGetStarted={handleGetStarted} />} />
+          <Route path="/blog" element={<BlogPage onGetStarted={handleGetStarted} />} />
+          <Route path="/pricing" element={<PricingPage onSuccess={handleContactSuccess} onGetStarted={handleGetStarted} />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
+
+      {/* Back to Top Button */}
+      <BackToTop />
 
       {/* Mobile Menu */}
       <MobileMenu
