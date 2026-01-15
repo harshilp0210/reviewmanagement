@@ -376,6 +376,7 @@
 
 .nav-links {
     display: flex;
+    align-items: center;
     gap: var(--space-lg);
 }
 
@@ -385,10 +386,17 @@
     font-size: 0.9375rem;
     font-weight: 500;
     transition: color var(--transition-fast);
+    padding: 0.5rem 0;
+    border-bottom: 2px solid transparent;
 }
 
 .nav-link:hover {
     color: var(--text-primary);
+}
+
+.nav-link.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
 }
 
 .nav-actions {

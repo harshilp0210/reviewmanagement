@@ -1,0 +1,26 @@
+.page-container {
+    padding-top: 80px;
+    min-height: 100vh;
+}
+
+/* Ensure section fills the page nicely */
+.page-container .section {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.page-container .section:first-child {
+    padding-top: var(--space-2xl);
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding-top: 70px;
+    }
+
+    .page-container .section {
+        min-height: auto;
+    }
+}

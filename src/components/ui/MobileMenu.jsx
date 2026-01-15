@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import './MobileMenu.css';
 
 function MobileMenu({ isOpen, onClose }) {
@@ -34,26 +35,30 @@ function MobileMenu({ isOpen, onClose }) {
                 </div>
 
                 <nav className="mobile-menu-nav">
-                    <a href="#features" className="mobile-menu-link" onClick={onClose}>
+                    <Link to="/features" className="mobile-menu-link" onClick={onClose}>
                         <span className="mobile-menu-icon">✨</span>
                         Features
-                    </a>
-                    <a href="#demo" className="mobile-menu-link" onClick={onClose}>
+                    </Link>
+                    <Link to="/how-it-works" className="mobile-menu-link" onClick={onClose}>
                         <span className="mobile-menu-icon">🎯</span>
-                        Demo
-                    </a>
-                    <a href="#pricing" className="mobile-menu-link" onClick={onClose}>
+                        How It Works
+                    </Link>
+                    <Link to="/case-studies" className="mobile-menu-link" onClick={onClose}>
+                        <span className="mobile-menu-icon">📈</span>
+                        Case Studies
+                    </Link>
+                    <Link to="/pricing" className="mobile-menu-link" onClick={onClose}>
                         <span className="mobile-menu-icon">💰</span>
                         Pricing
-                    </a>
-                    <a href="#testimonials" className="mobile-menu-link" onClick={onClose}>
-                        <span className="mobile-menu-icon">⭐</span>
-                        Testimonials
-                    </a>
-                    <a href="#faq" className="mobile-menu-link" onClick={onClose}>
-                        <span className="mobile-menu-icon">❓</span>
-                        FAQ
-                    </a>
+                    </Link>
+                    <Link to="/blog" className="mobile-menu-link" onClick={onClose}>
+                        <span className="mobile-menu-icon">📚</span>
+                        Blog
+                    </Link>
+                    <Link to="/integrations" className="mobile-menu-link" onClick={onClose}>
+                        <span className="mobile-menu-icon">🔗</span>
+                        Integrations
+                    </Link>
                 </nav>
 
                 <div className="mobile-menu-actions">

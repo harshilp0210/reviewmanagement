@@ -1,24 +1,64 @@
 import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import './index.css';
 
-// Landing Components
-import Hero from './components/landing/Hero';
-import StatsBar from './components/landing/StatsBar';
-import CustomerLogos from './components/landing/CustomerLogos';
-import DemoSection from './components/landing/DemoSection';
-import Testimonials from './components/landing/Testimonials';
-import Pricing from './components/landing/Pricing';
-import ContactForm from './components/landing/ContactForm';
-import FAQ from './components/landing/FAQ';
-import Footer from './components/landing/Footer';
+// Pages
+import HomePage from './pages/HomePage';
+import FeaturesPage from './pages/FeaturesPage';
+import HowItWorksPage from './pages/HowItWorksPage';
+import CaseStudiesPage from './pages/CaseStudiesPage';
+import IntegrationsPage from './pages/IntegrationsPage';
+import BlogPage from './pages/BlogPage';
+import PricingPage from './pages/PricingPage';
 
 // Feature Components
 import OnboardingModal from './components/features/OnboardingModal';
 
 // UI Components
 import MobileMenu from './components/ui/MobileMenu';
-import StickyCTA from './components/ui/StickyCTA';
 import { ToastProvider, useToast } from './components/ui/Toast';
+
+// Navigation Component
+function Navigation({ onMenuOpen, onGetStarted }) {
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path ? 'nav-link active' : 'nav-link';
+
+  return (
+    <nav className="nav">
+      <div className="container flex-between">
+        <Link to="/" className="nav-brand">
+          <img src="/logo.png" alt="ReviewManager" className="brand-logo" />
+          <span className="brand-tagline">Collect. Respond. Improve.</span>
+        </Link>
+        <div className="nav-links">
+          <Link to="/features" className={isActive('/features')}>Features</Link>
+          <Link to="/how-it-works" className={isActive('/how-it-works')}>How It Works</Link>
+          <Link to="/case-studies" className={isActive('/case-studies')}>Case Studies</Link>
+          <Link to="/pricing" className={isActive('/pricing')}>Pricing</Link>
+          <Link to="/blog" className={isActive('/blog')}>Blog</Link>
+        </div>
+        <div className="nav-actions">
+          <button className="btn btn-ghost">Sign In</button>
+          <button className="btn btn-primary" onClick={onGetStarted}>
+            Get Started
+          </button>
+          <button
+            className="hamburger-btn"
+            onClick={onMenuOpen}
+            aria-label="Open menu"
+          >
+            <div className="hamburger-icon">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}
 
 function AppContent() {
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -31,54 +71,21 @@ function AppContent() {
 
   return (
     <div className="app">
-      {/* Navigation */}
-      <nav className="nav">
-        <div className="container flex-between">
-          <div className="nav-brand">
-            <img src="/logo.png" alt="ReviewManager" className="brand-logo" />
-            <span className="brand-tagline">Collect. Respond. Improve.</span>
-          </div>
-          <div className="nav-links">
-            <a href="#features" className="nav-link">Features</a>
-            <a href="#pricing" className="nav-link">Pricing</a>
-            <a href="#contact" className="nav-link">Contact</a>
-            <a href="#faq" className="nav-link">FAQ</a>
-          </div>
-          <div className="nav-actions">
-            <button className="btn btn-ghost">Sign In</button>
-            <button
-              className="btn btn-primary"
-              onClick={() => setShowOnboarding(true)}
-            >
-              Get Started
-            </button>
-            {/* Hamburger Menu Button */}
-            <button
-              className="hamburger-btn"
-              onClick={() => setShowMobileMenu(true)}
-              aria-label="Open menu"
-            >
-              <div className="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navigation
+        onMenuOpen={() => setShowMobileMenu(true)}
+        onGetStarted={() => setShowOnboarding(true)}
+      />
 
-      {/* Main Content */}
       <main>
-        <Hero onGetStarted={() => setShowOnboarding(true)} />
-        <CustomerLogos />
-        <StatsBar />
-        <DemoSection />
-        <Testimonials />
-        <Pricing />
-        <ContactForm onSuccess={handleContactSuccess} />
-        <FAQ />
-        <Footer onGetStarted={() => setShowOnboarding(true)} />
+        <Routes>
+          <Route path="/" element={<HomePage onGetStarted={() => setShowOnboarding(true)} />} />
+          <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/how-it-works" element={<HowItWorksPage />} />
+          <Route path="/case-studies" element={<CaseStudiesPage />} />
+          <Route path="/integrations" element={<IntegrationsPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/pricing" element={<PricingPage onSuccess={handleContactSuccess} />} />
+        </Routes>
       </main>
 
       {/* Mobile Menu */}
@@ -86,9 +93,6 @@ function AppContent() {
         isOpen={showMobileMenu}
         onClose={() => setShowMobileMenu(false)}
       />
-
-      {/* Sticky CTA (Mobile Only) */}
-      <StickyCTA onClick={() => setShowOnboarding(true)} />
 
       {/* Modals */}
       {showOnboarding && (
@@ -101,7 +105,9 @@ function AppContent() {
 function App() {
   return (
     <ToastProvider>
-      <AppContent />
+      <Router>
+        <AppContent />
+      </Router>
     </ToastProvider>
   );
 }
