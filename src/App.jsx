@@ -10,6 +10,7 @@ import CaseStudiesPage from './pages/CaseStudiesPage';
 import IntegrationsPage from './pages/IntegrationsPage';
 import BlogPage from './pages/BlogPage';
 import PricingPage from './pages/PricingPage';
+import BenefitsPage from './pages/BenefitsPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Feature Components
@@ -54,10 +55,10 @@ function Navigation({ onMenuOpen, onGetStarted }) {
           <span className="brand-tagline">Collect. Respond. Improve.</span>
         </Link>
         <div className="nav-links">
+          <Link to="/why-reviewmanager" className={isActive('/why-reviewmanager')}>Why Us</Link>
           <Link to="/features" className={isActive('/features')}>Features</Link>
-          <Link to="/how-it-works" className={isActive('/how-it-works')}>How It Works</Link>
-          <Link to="/case-studies" className={isActive('/case-studies')}>Case Studies</Link>
           <Link to="/pricing" className={isActive('/pricing')}>Pricing</Link>
+          <Link to="/case-studies" className={isActive('/case-studies')}>Case Studies</Link>
           <Link to="/blog" className={isActive('/blog')}>Blog</Link>
         </div>
         <div className="nav-actions">
@@ -133,6 +134,7 @@ function AppContent() {
       <main>
         <Routes>
           <Route path="/" element={<HomePage onGetStarted={handleGetStarted} />} />
+          <Route path="/why-reviewmanager" element={<BenefitsPage onGetStarted={handleGetStarted} />} />
           <Route path="/features" element={<FeaturesPage onGetStarted={handleGetStarted} />} />
           <Route path="/how-it-works" element={<HowItWorksPage onGetStarted={handleGetStarted} />} />
           <Route path="/case-studies" element={<CaseStudiesPage onGetStarted={handleGetStarted} />} />

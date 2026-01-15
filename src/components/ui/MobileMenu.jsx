@@ -35,21 +35,21 @@ function MobileMenu({ isOpen, onClose }) {
                 </div>
 
                 <nav className="mobile-menu-nav">
+                    <Link to="/why-reviewmanager" className="mobile-menu-link" onClick={onClose}>
+                        <span className="mobile-menu-icon">💡</span>
+                        Why Us
+                    </Link>
                     <Link to="/features" className="mobile-menu-link" onClick={onClose}>
                         <span className="mobile-menu-icon">✨</span>
                         Features
                     </Link>
-                    <Link to="/how-it-works" className="mobile-menu-link" onClick={onClose}>
-                        <span className="mobile-menu-icon">🎯</span>
-                        How It Works
+                    <Link to="/pricing" className="mobile-menu-link" onClick={onClose}>
+                        <span className="mobile-menu-icon">💰</span>
+                        Pricing
                     </Link>
                     <Link to="/case-studies" className="mobile-menu-link" onClick={onClose}>
                         <span className="mobile-menu-icon">📈</span>
                         Case Studies
-                    </Link>
-                    <Link to="/pricing" className="mobile-menu-link" onClick={onClose}>
-                        <span className="mobile-menu-icon">💰</span>
-                        Pricing
                     </Link>
                     <Link to="/blog" className="mobile-menu-link" onClick={onClose}>
                         <span className="mobile-menu-icon">📚</span>
