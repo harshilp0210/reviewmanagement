@@ -26,7 +26,7 @@ function LoginModal({ isOpen, onClose }) {
             onClose();
             navigate('/dashboard');
         } catch (err) {
-            setError('Invalid credentials');
+            setError(err.message || 'Invalid credentials');
         }
     };
 

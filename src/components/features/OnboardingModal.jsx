@@ -1,10 +1,22 @@
 import { useState } from 'react';
-import { businessCategories, platforms, locations } from '../../data/mockData';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { businessCategories, platforms } from '../../data/mockData';
 import './OnboardingModal.css';
 
 function OnboardingModal({ onClose }) {
+    const navigate = useNavigate();
+    const { register, isLoading } = useAuth();
     const [step, setStep] = useState(1);
+    const [error, setError] = useState('');
+
     const [formData, setFormData] = useState({
+        // Account Info
+        email: '',
+        password: '',
+        confirmPassword: '',
+
+        // Business Info
         businessName: '',
         category: '',
         locations: [{ name: '', address: '' }],
@@ -13,6 +25,7 @@ function OnboardingModal({ onClose }) {
 
     const handleInputChange = (field, value) => {
         setFormData({ ...formData, [field]: value });
+        setError('');
     };
 
     const handleLocationChange = (index, field, value) => {
@@ -43,8 +56,68 @@ function OnboardingModal({ onClose }) {
         }
     };
 
-    const nextStep = () => setStep(step + 1);
+    const validateStep = () => {
+        setError('');
+
+        switch (step) {
+            case 1: // Account
+                if (!formData.email || !formData.password || !formData.confirmPassword) {
+                    setError('Please fill in all fields');
+                    return false;
+                }
+                if (formData.password !== formData.confirmPassword) {
+                    setError('Passwords do not match');
+                    return false;
+                }
+                if (formData.password.length < 6) {
+                    setError('Password must be at least 6 characters');
+                    return false;
+                }
+                return true;
+
+            case 2: // Business
+                if (!formData.businessName || !formData.category) {
+                    setError('Please enter your business details');
+                    return false;
+                }
+                return true;
+
+            case 3: // Locations
+                const validLocations = formData.locations.filter(l => l.name && l.address);
+                if (validLocations.length === 0) {
+                    setError('Please add at least one location');
+                    return false;
+                }
+                return true;
+
+            default:
+                return true;
+        }
+    };
+
+    const nextStep = () => {
+        if (validateStep()) {
+            setStep(step + 1);
+        }
+    };
+
     const prevStep = () => setStep(step - 1);
+
+    const handleComplete = async () => {
+        try {
+            setError('');
+            await register(formData.email, formData.password, {
+                businessName: formData.businessName,
+                category: formData.category,
+                locations: formData.locations,
+                connectedPlatforms: formData.connectedPlatforms
+            });
+            onClose();
+            navigate('/dashboard');
+        } catch (err) {
+            setError(err.message || 'Registration failed. Please try again.');
+        }
+    };
 
     const renderStep = () => {
         switch (step) {
@@ -52,10 +125,59 @@ function OnboardingModal({ onClose }) {
                 return (
                     <div className="step-content">
                         <div className="step-header">
+                            <span className="step-icon">👤</span>
+                            <h3>Create your account</h3>
+                            <p>Start your 14-day free trial. No credit card required.</p>
+                        </div>
+
+                        {error && <div className="form-error">{error}</div>}
+
+                        <div className="form-group">
+                            <label>Email Address</label>
+                            <input
+                                type="email"
+                                className="input"
+                                placeholder="name@company.com"
+                                value={formData.email}
+                                onChange={(e) => handleInputChange('email', e.target.value)}
+                            />
+                        </div>
+
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Password</label>
+                                <input
+                                    type="password"
+                                    className="input"
+                                    placeholder="Min. 6 chars"
+                                    value={formData.password}
+                                    onChange={(e) => handleInputChange('password', e.target.value)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Confirm Password</label>
+                                <input
+                                    type="password"
+                                    className="input"
+                                    placeholder="Confirm password"
+                                    value={formData.confirmPassword}
+                                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            case 2:
+                return (
+                    <div className="step-content">
+                        <div className="step-header">
                             <span className="step-icon">🏢</span>
                             <h3>Tell us about your business</h3>
                             <p>We'll personalize your experience based on your industry.</p>
                         </div>
+
+                        {error && <div className="form-error">{error}</div>}
 
                         <div className="form-group">
                             <label>Business Name</label>
@@ -84,14 +206,16 @@ function OnboardingModal({ onClose }) {
                     </div>
                 );
 
-            case 2:
+            case 3:
                 return (
                     <div className="step-content">
                         <div className="step-header">
                             <span className="step-icon">📍</span>
                             <h3>Add your locations</h3>
-                            <p>Add one or more locations where you receive reviews.</p>
+                            <p>Add the locations where you receive reviews.</p>
                         </div>
+
+                        {error && <div className="form-error">{error}</div>}
 
                         {formData.locations.map((loc, index) => (
                             <div key={index} className="location-form">
@@ -136,13 +260,13 @@ function OnboardingModal({ onClose }) {
                     </div>
                 );
 
-            case 3:
+            case 4:
                 return (
                     <div className="step-content">
                         <div className="step-header">
                             <span className="step-icon">🔗</span>
                             <h3>Connect your review platforms</h3>
-                            <p>Select the platforms where you receive reviews. You can add more later.</p>
+                            <p>Select where you receive reviews (optional).</p>
                         </div>
 
                         <div className="platforms-grid">
@@ -168,31 +292,33 @@ function OnboardingModal({ onClose }) {
                     </div>
                 );
 
-            case 4:
+            case 5:
                 return (
                     <div className="step-content">
                         <div className="step-header">
                             <span className="step-icon success">🎉</span>
                             <h3>You're all set!</h3>
-                            <p>Your ReviewHub account is ready. Let's start managing your reputation.</p>
+                            <p>Review the details below and create your account.</p>
                         </div>
+
+                        {error && <div className="form-error">{error}</div>}
 
                         <div className="summary-card">
                             <div className="summary-item">
+                                <span className="summary-label">Account</span>
+                                <span className="summary-value">{formData.email}</span>
+                            </div>
+                            <div className="summary-item">
                                 <span className="summary-label">Business</span>
-                                <span className="summary-value">{formData.businessName || 'Not provided'}</span>
+                                <span className="summary-value">{formData.businessName}</span>
                             </div>
                             <div className="summary-item">
                                 <span className="summary-label">Category</span>
-                                <span className="summary-value">{formData.category || 'Not selected'}</span>
+                                <span className="summary-value">{formData.category}</span>
                             </div>
                             <div className="summary-item">
                                 <span className="summary-label">Locations</span>
                                 <span className="summary-value">{formData.locations.filter(l => l.name).length} location(s)</span>
-                            </div>
-                            <div className="summary-item">
-                                <span className="summary-label">Platforms</span>
-                                <span className="summary-value">{formData.connectedPlatforms.length} connected</span>
                             </div>
                         </div>
                     </div>
@@ -210,37 +336,45 @@ function OnboardingModal({ onClose }) {
 
                 {/* Progress */}
                 <div className="onboarding-progress">
-                    {[1, 2, 3, 4].map(s => (
+                    {[1, 2, 3, 4, 5].map(s => (
                         <div
                             key={s}
                             className={`progress-step ${s === step ? 'active' : ''} ${s < step ? 'completed' : ''}`}
                         >
                             <span className="progress-number">{s < step ? '✓' : s}</span>
                             <span className="progress-label">
-                                {s === 1 && 'Business'}
-                                {s === 2 && 'Locations'}
-                                {s === 3 && 'Platforms'}
-                                {s === 4 && 'Done'}
+                                {s === 1 && 'Account'}
+                                {s === 2 && 'Business'}
+                                {s === 3 && 'Locations'}
+                                {s === 4 && 'Apps'}
+                                {s === 5 && 'Finish'}
                             </span>
                         </div>
                     ))}
                 </div>
 
-                {renderStep()}
+                <div key={step}>
+                    {renderStep()}
+                </div>
 
                 <div className="onboarding-actions">
-                    {step > 1 && step < 4 && (
-                        <button className="btn btn-ghost" onClick={prevStep}>
+                    {step > 1 && (
+                        <button className="btn btn-ghost" onClick={prevStep} disabled={isLoading}>
                             Back
                         </button>
                     )}
-                    {step < 4 ? (
+
+                    {step < 5 ? (
                         <button className="btn btn-primary" onClick={nextStep}>
                             Continue
                         </button>
                     ) : (
-                        <button className="btn btn-primary" onClick={onClose}>
-                            Go to Dashboard
+                        <button
+                            className="btn btn-primary"
+                            onClick={handleComplete}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Creating Account...' : 'Create Account & Go to Dashboard'}
                         </button>
                     )}
                 </div>
