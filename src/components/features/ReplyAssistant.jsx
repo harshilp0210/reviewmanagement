@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { replyTemplates, mockReviews } from '../../data/mockData';
 import { processTemplate } from '../../utils/helpers';
 import './ReplyAssistant.css';
@@ -9,9 +9,17 @@ function ReplyAssistant() {
     const [tone, setTone] = useState('friendly');
     const [replyText, setReplyText] = useState('');
     const [copied, setCopied] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
 
-    // Use first review as example
+    // Use first review as example (in real app, this would be passed in)
     const exampleReview = mockReviews[0];
+
+    // Simulate Sentiment Analysis on mount
+    useEffect(() => {
+        if (exampleReview.rating >= 4) setSelectedCategory('positive');
+        else if (exampleReview.rating === 3) setSelectedCategory('neutral');
+        else setSelectedCategory('negative');
+    }, [exampleReview]);
 
     const templates = replyTemplates[selectedCategory] || [];
 
@@ -25,31 +33,49 @@ function ReplyAssistant() {
         setReplyText(processed);
     };
 
-    const adjustTone = (newTone) => {
-        setTone(newTone);
-        // Simple tone adjustment simulation
-        if (replyText) {
-            let adjusted = replyText;
-            if (newTone === 'professional') {
-                adjusted = adjusted.replace(/!/g, '.').replace(/so happy/gi, 'pleased').replace(/amazing/gi, 'excellent');
-            } else if (newTone === 'apologetic') {
-                adjusted = 'We sincerely apologize for any inconvenience. ' + adjusted;
+    const generateSmartReply = () => {
+        setIsGenerating(true);
+        setReplyText(''); // Clear current text to show typing effect
+
+        // Simulate network/processing delay
+        setTimeout(() => {
+            const bases = {
+                friendly: {
+                    positive: `Hi ${exampleReview.customerName}! 👋\n\nThanks so much for the glowing review! We're super happy to hear you loved the ${exampleReview.service}. It makes our day to see feedback like this.\n\nCan't wait to see you again at ${exampleReview.location}!`,
+                    neutral: `Hi ${exampleReview.customerName},\n\nThanks for stopping by ${exampleReview.location}. We appreciate your feedback and want to make sure your next visit is even better. Hope to see you soon!`,
+                    negative: `Hi ${exampleReview.customerName},\n\nWe're really sorry to hear about your experience. This isn't the standard we aim for at ${exampleReview.location}. Please reach out to us directly so we can make it right.`
+                },
+                professional: {
+                    positive: `Dear ${exampleReview.customerName},\n\nThank you for taking the time to share your feedback. We are delighted to hear that you enjoyed your experience with our ${exampleReview.service} service at ${exampleReview.location}.\n\nWe look forward to serving you again soon.\n\nSincerely,\nThe Team`,
+                    neutral: `Dear ${exampleReview.customerName},\n\nThank you for your review of ${exampleReview.location}. We value your feedback as it helps us identify areas for improvement. We hope to have the opportunity to serve you better in the future.`,
+                    negative: `Dear ${exampleReview.customerName},\n\nWe apologize that your experience did not meet your expectations. We take all feedback seriously and would like to address your concerns. Please contact our management team directly.`
+                },
+                apologetic: {
+                    positive: `Hello ${exampleReview.customerName},\n\nWow, thank you! We are so humbled by your kind words about the ${exampleReview.service}. It means a lot to our team at ${exampleReview.location}!\n\nThanks again!`,
+                    neutral: `Hello ${exampleReview.customerName},\n\nI'm sorry your visit wasn't perfect. We always try our best at ${exampleReview.location}, and I appreciate you telling us where we can improve.`,
+                    negative: `Dear ${exampleReview.customerName},\n\nI am sincerely sorry for the disappointment you experienced. We clearly missed the mark with your ${exampleReview.service}, and for that, I apologize. Please give us a chance to fix this.`
+                }
+            };
+
+            // Select base based on tone and category (simulated logic)
+            // In a real AI, this would be a prompt to an LLM
+            let generated = bases[tone][selectedCategory] || bases['professional']['positive'];
+
+            // Add some "magic" variation
+            const magicPhrases = [
+                "\n\nP.S. We shared this with the whole team!",
+                "\n\nThanks for being a loyal customer.",
+                "\n\nWe truly value your support."
+            ];
+
+            if (exampleReview.rating === 5) {
+                generated += magicPhrases[Math.floor(Math.random() * magicPhrases.length)];
             }
-            setReplyText(adjusted);
-        }
-    };
 
-    const generateAIReply = () => {
-        // Simulate AI-generated reply
-        const aiReply = `Thank you so much for taking the time to share your wonderful experience, ${exampleReview.customerName}! We're absolutely thrilled that our team at ${exampleReview.location} exceeded your expectations.
-
-Your kind words about our ${exampleReview.service} service mean the world to us and will definitely be shared with the team. We truly appreciate your support and can't wait to welcome you back soon!
-
-Warm regards,
-The ReviewHub Team`;
-
-        setReplyText(aiReply);
-        setSelectedTemplate(null);
+            setReplyText(generated);
+            setIsGenerating(false);
+            setSelectedTemplate(null);
+        }, 1500);
     };
 
     const copyToClipboard = () => {
@@ -79,10 +105,48 @@ The ReviewHub Team`;
             </div>
 
             <div className="reply-builder">
+                {/* Tone Toggle */}
+                <div className="tone-section">
+                    <h4>Adjust Tone</h4>
+                    <div className="toggle-group">
+                        {['friendly', 'professional', 'apologetic'].map(t => (
+                            <button
+                                key={t}
+                                className={`toggle-option ${tone === t ? 'active' : ''}`}
+                                onClick={() => setTone(t)}
+                            >
+                                {t === 'friendly' && '😊'}
+                                {t === 'professional' && '💼'}
+                                {t === 'apologetic' && '🙏'}
+                                {t.charAt(0).toUpperCase() + t.slice(1)}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* AI Generate Button */}
+                <button
+                    className={`btn btn-primary ai-btn ${isGenerating ? 'generating' : ''}`}
+                    onClick={generateSmartReply}
+                    disabled={isGenerating}
+                >
+                    {isGenerating ? (
+                        <>
+                            <span className="ai-spinner">✨</span>
+                            Writing Magic...
+                        </>
+                    ) : (
+                        <>
+                            <span className="ai-sparkle">✨</span>
+                            Generate Smart Reply
+                        </>
+                    )}
+                </button>
+
+                <div className="divider"><span>OR SELECT TEMPLATE</span></div>
+
                 {/* Template Selection */}
                 <div className="template-section">
-                    <h4>Response Templates</h4>
-
                     <div className="category-tabs">
                         {['positive', 'neutral', 'negative'].map(cat => (
                             <button
@@ -111,62 +175,45 @@ The ReviewHub Team`;
                     </div>
                 </div>
 
-                {/* Tone Toggle */}
-                <div className="tone-section">
-                    <h4>Adjust Tone</h4>
-                    <div className="toggle-group">
-                        {['friendly', 'professional', 'apologetic'].map(t => (
-                            <button
-                                key={t}
-                                className={`toggle-option ${tone === t ? 'active' : ''}`}
-                                onClick={() => adjustTone(t)}
-                            >
-                                {t === 'friendly' && '😊'}
-                                {t === 'professional' && '💼'}
-                                {t === 'apologetic' && '🙏'}
-                                {t.charAt(0).toUpperCase() + t.slice(1)}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* AI Generate Button */}
-                <button className="btn btn-primary ai-btn" onClick={generateAIReply}>
-                    <span className="ai-sparkle">✨</span>
-                    Generate AI Reply
-                </button>
-
                 {/* Reply Editor */}
                 <div className="reply-editor">
                     <div className="editor-header">
                         <h4>Your Reply</h4>
-                        <div className="smart-fields">
-                            <span className="smart-field">{'{{customer_name}}'}</span>
-                            <span className="smart-field">{'{{location}}'}</span>
-                            <span className="smart-field">{'{{service}}'}</span>
+                        <div className="editor-tools">
+                            {/* Tools placeholder */}
                         </div>
                     </div>
                     <textarea
                         className="input textarea reply-textarea"
-                        placeholder="Write your reply or select a template..."
+                        placeholder={isGenerating ? "AI is thinking..." : "Write your reply or select a template..."}
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
+                        disabled={isGenerating}
                     />
                     <div className="editor-actions">
-                        <span className="char-count">{replyText.length} characters</span>
-                        <button
-                            className="btn btn-secondary btn-sm"
-                            onClick={copyToClipboard}
-                            disabled={!replyText}
-                        >
-                            {copied ? '✓ Copied!' : '📋 Copy'}
-                        </button>
-                        <button
-                            className="btn btn-primary btn-sm"
-                            disabled={!replyText}
-                        >
-                            Send Reply
-                        </button>
+                        <span className="char-count">{replyText.length} chars</span>
+                        <div className="action-buttons">
+                            <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={() => setReplyText('')}
+                                disabled={!replyText}
+                            >
+                                Clear
+                            </button>
+                            <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={copyToClipboard}
+                                disabled={!replyText}
+                            >
+                                {copied ? '✓ Copied!' : '📋 Copy'}
+                            </button>
+                            <button
+                                className="btn btn-primary btn-sm"
+                                disabled={!replyText}
+                            >
+                                Post Reply
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

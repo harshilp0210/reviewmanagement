@@ -29,6 +29,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import OnboardingModal from './components/features/OnboardingModal';
 import MobileMenu from './components/ui/MobileMenu';
 import LoginModal from './components/auth/LoginModal';
+import ChatWidget from './components/shared/ChatWidget';
 import { ToastProvider, useToast } from './components/ui/Toast';
 
 // Scroll to top on route change
@@ -215,6 +216,9 @@ function AppContent() {
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
       />
+
+      {/* AI Chatbot */}
+      <ChatWidget />
     </div>
   );
 }

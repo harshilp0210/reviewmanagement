@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { locations } from '../../data/mockData';
 import { generateShortLink } from '../../utils/helpers';
+import { useToast } from '../ui/Toast';
 import './ReviewRequestGenerator.css';
 
 function ReviewRequestGenerator() {
@@ -9,7 +10,9 @@ function ReviewRequestGenerator() {
     const [smartRouting, setSmartRouting] = useState(true);
     const [messageType, setMessageType] = useState('sms');
     const [copied, setCopied] = useState(false);
+    const [isSending, setIsSending] = useState(false);
     const qrRef = useRef(null);
+    const toast = useToast();
 
     // SMS/Email templates
     const templates = {
@@ -24,7 +27,7 @@ function ReviewRequestGenerator() {
         setShortLink(generateShortLink());
     }, [selectedLocation]);
 
-    // Simple QR code visualization (in production, use a real QR library)
+    // Simple QR code visualization
     const drawQR = () => {
         const canvas = qrRef.current;
         if (!canvas) return;
@@ -78,11 +81,20 @@ function ReviewRequestGenerator() {
         navigator.clipboard.writeText(`https://${shortLink}`);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+        toast.success('Link copied to clipboard!');
     };
 
     const regenerateLink = () => {
         setShortLink(generateShortLink());
         setCopied(false);
+    };
+
+    const handleSend = () => {
+        setIsSending(true);
+        setTimeout(() => {
+            setIsSending(false);
+            toast.success(`Test ${messageType.toUpperCase()} sent successfully!`);
+        }, 1500);
     };
 
     return (
@@ -203,18 +215,24 @@ function ReviewRequestGenerator() {
                 </div>
 
                 <div className="share-options">
-                    <button className="share-btn">
-                        <span>📱</span> Send SMS
+                    <button
+                        className="share-btn primary"
+                        onClick={handleSend}
+                        disabled={isSending}
+                    >
+                        {isSending ? 'Sending...' : (
+                            <>
+                                <span>{messageType === 'sms' ? '📱' : '✉️'}</span>
+                                Send Test {messageType === 'sms' ? 'SMS' : 'Email'}
+                            </>
+                        )}
                     </button>
-                    <button className="share-btn">
-                        <span>✉️</span> Send Email
-                    </button>
-                    <button className="share-btn">
-                        <span>⬇️</span> Download QR
-                    </button>
-                    <button className="share-btn">
-                        <span>🖨️</span> Print
-                    </button>
+                </div>
+
+                <div className="download-options">
+                    <button className="share-btn"><span>⬇️</span> PNG</button>
+                    <button className="share-btn"><span>⬇️</span> SVG</button>
+                    <button className="share-btn"><span>🖨️</span> Print</button>
                 </div>
 
                 <div className="usage-tips">
