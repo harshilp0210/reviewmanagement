@@ -192,3 +192,19 @@
 .login-footer a:hover {
     text-decoration: underline;
 }
+
+@media (max-width: 480px) {
+    .login-modal {
+        padding: var(--space-lg);
+        max-width: 90%;
+    }
+
+    .login-logo {
+        height: 60px;
+        /* Smaller on mobile */
+    }
+
+    .login-header h2 {
+        font-size: 1.25rem;
+    }
+}
