@@ -1,123 +1,253 @@
 .pricing-section {
     background: var(--bg-primary);
+    padding: var(--space-3xl) 0;
+    /* More vertical breath */
+}
+
+/* Billing Toggle */
+.billing-toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.billing-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.billing-label.active {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.billing-toggle-btn {
+    width: 52px;
+    height: 28px;
+    background: var(--bg-tertiary);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.billing-toggle-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.toggle-handle {
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.billing-toggle-btn.active .toggle-handle {
+    left: 26px;
+}
+
+.save-badge {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 6px;
+    font-weight: 600;
+    white-space: nowrap;
+    /* Prevent breaking */
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .pricing-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-lg);
-    margin-bottom: var(--space-2xl);
+    gap: 2.5rem;
+    /* Increased gap */
+    margin-bottom: var(--space-3xl);
+    max-width: 1200px;
+    /* Constrain width for better spacing */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .pricing-card {
-    padding: var(--space-xl);
+    padding: 3rem 2rem;
+    /* Increased vertical padding */
     display: flex;
     flex-direction: column;
     position: relative;
     animation: fadeIn 0.6s ease forwards;
     opacity: 0;
+    /* Glass effect enhancement */
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
 }
 
 .pricing-card.popular {
-    border-color: var(--accent-primary);
-    box-shadow: var(--shadow-glow);
+    border-color: var(--primary);
+    /* Use primary variable */
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);
+    /* Softer glow */
     transform: scale(1.05);
+    background: rgba(30, 30, 40, 0.6);
+    /* Slightly darker for contrast */
+    z-index: 1;
 }
 
 .popular-badge {
     position: absolute;
-    top: -12px;
+    top: -16px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.5rem;
     background: var(--gradient-primary);
     border-radius: var(--radius-full);
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 600;
     white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .pricing-header {
-    margin-bottom: var(--space-lg);
+    margin-bottom: 2rem;
+    text-align: left;
 }
 
 .plan-name {
     font-size: 1.5rem;
-    margin-bottom: var(--space-xs);
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
 }
 
 .plan-description {
-    font-size: 0.9375rem;
+    font-size: 1rem;
     color: var(--text-muted);
+    line-height: 1.5;
+    min-height: 3rem;
+    /* Align heights */
 }
 
 .plan-price {
     display: flex;
     align-items: baseline;
-    margin-bottom: var(--space-xl);
+    margin-bottom: 0.5rem;
+}
+
+.billed-yearly-text {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    opacity: 0.8;
 }
 
 .price-currency {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--text-secondary);
+    margin-right: 4px;
 }
 
 .price-amount {
-    font-size: 3.5rem;
+    font-size: 4rem;
+    /* Larger font */
     font-weight: 800;
     line-height: 1;
     background: var(--gradient-primary);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .price-period {
-    font-size: 1rem;
+    font-size: 1.125rem;
     color: var(--text-muted);
-    margin-left: 4px;
+    margin-left: 6px;
+    font-weight: 400;
 }
 
 .plan-features {
     list-style: none;
     flex: 1;
-    margin-bottom: var(--space-xl);
+    margin-bottom: 2.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    /* Divider */
+    padding-top: 2rem;
 }
 
 .plan-features li {
     display: flex;
-    align-items: flex-start;
-    gap: var(--space-sm);
-    padding: var(--space-sm) 0;
-    font-size: 0.9375rem;
+    align-items: center;
+    /* Center align checkmarks */
+    gap: 1rem;
+    padding: 0.75rem 0;
+    /* More padding */
+    font-size: 1rem;
     color: var(--text-secondary);
 }
 
 .feature-check {
     color: var(--success);
     font-weight: 600;
+    font-size: 1.25rem;
+    /* Larger check */
+    min-width: 24px;
 }
 
 .pricing-card .btn {
     width: 100%;
+    padding: 1rem;
+    /* Taller buttons */
+    margin-top: auto;
 }
 
 .pricing-footer {
     text-align: center;
+    margin-top: 4rem;
 }
 
 .pricing-footer p {
     color: var(--text-muted);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
+    opacity: 0.7;
+}
+
+@media (max-width: 1024px) {
+    .pricing-grid {
+        gap: 1.5rem;
+    }
 }
 
 @media (max-width: 900px) {
     .pricing-grid {
         grid-template-columns: 1fr;
+        gap: 3rem;
+        max-width: 500px;
     }
 
     .pricing-card.popular {
         transform: none;
         order: -1;
+        transform: scale(1.02);
+        /* Slight pop on mobile */
+    }
+
+    .price-amount {
+        font-size: 3.5rem;
     }
 }

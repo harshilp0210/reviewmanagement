@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { pricingPlans } from '../../data/mockData';
 import './Pricing.css';
 
 function Pricing() {
+    const [billing, setBilling] = useState('monthly');
+
     return (
         <section id="pricing" className="pricing-section section">
             <div className="container">
@@ -11,6 +14,21 @@ function Pricing() {
                     <p>
                         Start free for 14 days. No credit card required. Cancel anytime.
                     </p>
+
+                    {/* Billing Toggle */}
+                    <div className="billing-toggle-container">
+                        <span className={`billing-label ${billing === 'monthly' ? 'active' : ''}`}>Monthly</span>
+                        <button
+                            className={`billing-toggle-btn ${billing === 'yearly' ? 'active' : ''}`}
+                            onClick={() => setBilling(billing === 'monthly' ? 'yearly' : 'monthly')}
+                            aria-label="Toggle billing cycle"
+                        >
+                            <span className="toggle-handle"></span>
+                        </button>
+                        <span className={`billing-label ${billing === 'yearly' ? 'active' : ''}`}>
+                            Yearly <span className="save-badge">Save 20%</span>
+                        </span>
+                    </div>
                 </div>
 
                 <div className="pricing-grid">
@@ -31,9 +49,17 @@ function Pricing() {
 
                             <div className="plan-price">
                                 <span className="price-currency">$</span>
-                                <span className="price-amount">{plan.price}</span>
-                                <span className="price-period">/month</span>
+                                <span className="price-amount">
+                                    {billing === 'yearly' ? Math.floor(plan.price * 0.8) : plan.price}
+                                </span>
+                                <span className="price-period">/{billing === 'yearly' ? 'mo' : 'month'}</span>
                             </div>
+
+                            {billing === 'yearly' && (
+                                <div className="billed-yearly-text">
+                                    Billed ${Math.floor(plan.price * 0.8) * 12} yearly
+                                </div>
+                            )}
 
                             <ul className="plan-features">
                                 {plan.features.map((feature, i) => (
