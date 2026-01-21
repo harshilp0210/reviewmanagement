@@ -7,6 +7,7 @@ const menuItems = [
     { path: '/dashboard', icon: '📊', label: 'Dashboard', exact: true },
     { path: '/dashboard/inbox', icon: '📥', label: 'Reviews Inbox' },
     { path: '/dashboard/requests', icon: '📧', label: 'Review Requests' },
+    { path: '/dashboard/widgets', icon: '📢', label: 'Showcase Widgets' },
     { path: '/dashboard/analytics', icon: '📈', label: 'Analytics' },
     { path: '/dashboard/settings', icon: '⚙️', label: 'Settings' }
 ];

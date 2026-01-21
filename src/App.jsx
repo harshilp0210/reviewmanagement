@@ -21,6 +21,7 @@ import DashboardLayout from './components/dashboard/DashboardLayout';
 import DashboardHome from './pages/dashboard/DashboardHome';
 import ReviewsInbox from './pages/dashboard/ReviewsInbox';
 import ReviewRequests from './pages/dashboard/ReviewRequests';
+import Widgets from './pages/dashboard/Widgets';
 import Analytics from './pages/dashboard/Analytics';
 import Settings from './pages/dashboard/Settings';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -190,6 +191,7 @@ function AppContent() {
             <Route index element={<DashboardHome />} />
             <Route path="inbox" element={<ReviewsInbox />} />
             <Route path="requests" element={<ReviewRequests />} />
+            <Route path="widgets" element={<Widgets />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="settings" element={<Settings />} />
           </Route>

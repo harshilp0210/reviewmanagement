@@ -1,0 +1,76 @@
+.widgets-page {
+    max-width: 1200px;
+}
+
+.widgets-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.config-card,
+.install-card {
+    padding: var(--space-lg);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.config-card h3,
+.install-card h3 {
+    margin-bottom: var(--space-md);
+}
+
+.code-block {
+    position: relative;
+    background: #1e293b;
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-sm);
+    overflow-x: auto;
+}
+
+.code-block pre {
+    color: #f8fafc;
+    font-family: monospace;
+    font-size: 0.85rem;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.preview-section {
+    background: var(--bg-secondary);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.preview-section h3 {
+    margin-bottom: var(--space-lg);
+}
+
+.preview-container {
+    padding: 40px;
+    background: repeating-linear-gradient(45deg,
+            rgba(0, 0, 0, 0.03),
+            rgba(0, 0, 0, 0.03) 10px,
+            rgba(0, 0, 0, 0.01) 10px,
+            rgba(0, 0, 0, 0.01) 20px);
+    /* Checkerboard pattern to show transparency info */
+    border-radius: var(--radius-md);
+    border: 2px dashed var(--border-color);
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .widgets-grid {
+        grid-template-columns: 1fr;
+    }
+}
