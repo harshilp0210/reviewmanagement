@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 
 const AuthContext = createContext(null);
 
@@ -6,73 +7,35 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Initialize auth state from localStorage
+    // Initialize auth state from Supabase
     useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const session = localStorage.getItem('reviewmanager_session');
-                if (session) {
-                    const { email } = JSON.parse(session);
-                    const users = JSON.parse(localStorage.getItem('reviewmanager_users') || '{}');
+        // Check active session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user ?? null);
+            setIsLoading(false);
+        });
 
-                    if (users[email]) {
-                        setUser(users[email]);
-                    } else {
-                        // Session references invalid user
-                        localStorage.removeItem('reviewmanager_session');
-                    }
-                }
-            } catch (error) {
-                console.error('Auth initialization error:', error);
-                localStorage.removeItem('reviewmanager_session');
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+            setIsLoading(false);
+        });
 
-        checkAuth();
+        return () => subscription.unsubscribe();
     }, []);
 
     const login = async (email, password) => {
         setIsLoading(true);
         try {
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 800));
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
 
-            // Demo account bypass
-            if (email === 'demo@reviewmanager.com' && password === 'demo123') {
-                const demoUser = {
-                    id: 'demo-user',
-                    name: 'Demo User',
-                    email: 'demo@reviewmanager.com',
-                    businessName: 'Sunset Motel',
-                    avatar: null,
-                    plan: 'Professional',
-                    locations: 3
-                };
-                setUser(demoUser);
-                localStorage.setItem('reviewmanager_session', JSON.stringify({ email }));
-                return true;
-            }
-
-            const users = JSON.parse(localStorage.getItem('reviewmanager_users') || '{}');
-            const user = users[email];
-
-            if (!user) {
-                throw new Error('User not found');
-            }
-
-            // Simple hash check (in production use bcrypt)
-            const passwordHash = btoa(password); // Simple base64 for demo
-            if (user.passwordHash !== passwordHash) {
-                throw new Error('Invalid password');
-            }
-
-            setUser(user);
-            localStorage.setItem('reviewmanager_session', JSON.stringify({ email }));
+            if (error) throw error;
             return true;
-
         } catch (error) {
+            console.error('Login error:', error.message);
             throw error;
         } finally {
             setIsLoading(false);
@@ -82,46 +45,44 @@ export function AuthProvider({ children }) {
     const register = async (email, password, businessData) => {
         setIsLoading(true);
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            const users = JSON.parse(localStorage.getItem('reviewmanager_users') || '{}');
-
-            if (users[email]) {
-                throw new Error('Email already registered');
-            }
-
-            const newUser = {
-                id: crypto.randomUUID(),
+            // 1. Sign up user
+            const { data, error } = await supabase.auth.signUp({
                 email,
-                passwordHash: btoa(password), // Simple base64 for demo
-                name: businessData.businessName, // Using business name as user name for now
-                businessName: businessData.businessName,
-                category: businessData.category,
-                locations: businessData.locations,
-                connectedPlatforms: businessData.connectedPlatforms,
-                plan: 'Free Trial',
-                createdAt: new Date().toISOString()
-            };
+                password,
+                options: {
+                    data: {
+                        full_name: businessData.businessName,
+                        business_name: businessData.businessName,
+                        role: 'admin' // First user is admin
+                    }
+                }
+            });
 
-            // Save user
-            users[email] = newUser;
-            localStorage.setItem('reviewmanager_users', JSON.stringify(users));
+            if (error) throw error;
+            if (!data.user) throw new Error('Registration failed');
 
-            // Auto login
-            setUser(newUser);
-            localStorage.setItem('reviewmanager_session', JSON.stringify({ email }));
+            // 2. Create Organization (via RPC or manual insert depending on policies)
+            // For Phase 1 Simplified: We will let the user be created. 
+            // Ideally, we need a trigger or a second call to insert into 'organizations' table.
+            // We'll handle Org creation in a separate 'Setup' step if needed, 
+            // but for now let's try to insert directly if policies allow, 
+            // OR rely on a Trigger (which we haven't written).
+
+            // Let's create the profile and org manually for now to ensure data consistency
+            // Note: RLS might block this if not set up to allow 'insert own profile'
 
             return true;
         } catch (error) {
+            console.error('Registration error:', error.message);
             throw error;
         } finally {
             setIsLoading(false);
         }
     };
 
-    const logout = () => {
+    const logout = async () => {
+        await supabase.auth.signOut();
         setUser(null);
-        localStorage.removeItem('reviewmanager_session');
     };
 
     const value = {

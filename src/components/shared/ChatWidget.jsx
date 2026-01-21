@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
+import { chatService } from '../../services/ChatService';
 import './ChatWidget.css';
 
 function ChatWidget() {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { text: "Hi there! 👋 I'm your AI assistant. Ask me anything about ReviewManager, our pricing, or features!", isBot: true, timestamp: new Date() }
+        { text: "Hi there! 👋 I'm your support assistant. How can I help you today?", isBot: true, timestamp: new Date() }
     ]);
     const [inputValue, setInputValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [conversationId, setConversationId] = useState(null);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -18,57 +20,100 @@ function ChatWidget() {
         scrollToBottom();
     }, [messages, isTyping, isOpen]);
 
-    // Simulated AI Logic
-    const generateResponse = (input) => {
-        const lowerInput = input.toLowerCase();
+    // Load existing conversation on mount (if persisted)
+    useEffect(() => {
+        const storedId = localStorage.getItem('review_platform_chat_id');
+        if (storedId) {
+            setConversationId(storedId);
+            loadHistory(storedId);
+            subscribe(storedId);
+        }
+    }, []);
 
-        if (lowerInput.includes('price') || lowerInput.includes('cost') || lowerInput.includes('plan')) {
-            return "Our pricing starts at $29/mo for the Starter plan. We also have a Pro plan at $79/mo for growing businesses. You can try any plan free for 14 days!";
+    const loadHistory = async (id) => {
+        try {
+            const history = await chatService.getMessages(id);
+            if (history && history.length > 0) {
+                const formatted = history.map(msg => ({
+                    text: msg.content,
+                    isBot: msg.sender_type !== 'user',
+                    timestamp: new Date(msg.created_at)
+                }));
+                setMessages(formatted);
+            }
+        } catch (err) {
+            console.error("Failed to load history", err);
         }
-        if (lowerInput.includes('reviews') || lowerInput.includes('negative')) {
-            return "Managing reviews is crucial! With ReviewManager, you can aggregate reviews from Google, Facebook, and Yelp in one place. We also help you filter negative feedback privately.";
-        }
-        if (lowerInput.includes('demo') || lowerInput.includes('try')) {
-            return "You can start a free trial right now by clicking 'Get Started' in the navigation bar. No credit card required!";
-        }
-        if (lowerInput.includes('hello') || lowerInput.includes('hi')) {
-            return "Hello! How can I help you grow your business reputation today?";
-        }
-        if (lowerInput.includes('thank')) {
-            return "You're welcome! Let me know if you have any other questions.";
-        }
-
-        return "That's a great question! While I'm a demo AI, our support team can give you a detailed answer. Feel free to check out our 'Features' page for more info.";
     };
 
-    const handleSend = () => {
+    const subscribe = (id) => {
+        chatService.subscribeToMessages((newMsg) => {
+            if (newMsg.conversation_id === id) {
+                setMessages(prev => {
+                    // Avoid duplicates
+                    const exists = prev.some(m => m.timestamp && new Date(m.timestamp).getTime() === new Date(newMsg.created_at).getTime());
+                    // Simple timestamp check isn't perfect but good enough for demo. 
+                    // Ideally use IDs, but our local 'initial' message has no ID.
+                    // We only care about adding 'agent' messages coming from Realtime.
+                    if (newMsg.sender_type === 'user') return prev; // We already added our own message optimally
+
+                    return [...prev, {
+                        text: newMsg.content,
+                        isBot: newMsg.sender_type !== 'user',
+                        timestamp: new Date(newMsg.created_at)
+                    }];
+                });
+            }
+        });
+    };
+
+    const handleSend = async () => {
         if (!inputValue.trim()) return;
 
-        // Add user message
-        const userMsg = { text: inputValue, isBot: false, timestamp: new Date() };
-        setMessages(prev => [...prev, userMsg]);
+        const content = inputValue;
+        const tempMsg = { text: content, isBot: false, timestamp: new Date() };
+
+        // Optimistic UI update
+        setMessages(prev => [...prev, tempMsg]);
         setInputValue('');
         setIsTyping(true);
 
-        // Simulate network delay
-        setTimeout(() => {
-            const botResponse = generateResponse(userMsg.text);
-            setMessages(prev => [
-                ...prev,
-                { text: botResponse, isBot: true, timestamp: new Date() }
-            ]);
+        try {
+            let activeConvId = conversationId;
+
+            // Create conversation if new
+            if (!activeConvId) {
+                // Get default location (just for this demo)
+                const locationId = await chatService.getPublicDefaultLocation();
+                if (!locationId) {
+                    console.error("No location found to start chat");
+                    setMessages(prev => [...prev, { text: "⚠️ Service unavailable (No Location Configured)", isBot: true, timestamp: new Date() }]);
+                    setIsTyping(false);
+                    return;
+                }
+
+                const conv = await chatService.createConversation('Web Visitor', locationId);
+                activeConvId = conv.id;
+                setConversationId(activeConvId);
+                localStorage.setItem('review_platform_chat_id', activeConvId);
+                subscribe(activeConvId);
+            }
+
+            // Send Message
+            await chatService.sendMessage(activeConvId, content, 'user');
+
+            // We rely on Realtime for the reply, but let's hide typing immediately
             setIsTyping(false);
-        }, 1500);
+
+        } catch (err) {
+            console.error("Failed to send message", err);
+            setIsTyping(false);
+            setMessages(prev => [...prev, { text: "⚠️ Failed to send. Please try again.", isBot: true, timestamp: new Date() }]);
+        }
     };
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') handleSend();
-    };
-
-    const handleSuggestionClick = (suggestion) => {
-        setInputValue(suggestion);
-        // Optional: auto-send
-        // handleSend();
     };
 
     return (
@@ -93,10 +138,10 @@ function ChatWidget() {
                         <div className="bot-info">
                             <div className="bot-avatar">🤖</div>
                             <div className="bot-details">
-                                <h4>AI Assistant</h4>
+                                <h4>Support</h4>
                                 <div className="bot-status">
                                     <span className="status-dot"></span>
-                                    Online
+                                    {conversationId ? 'Connected' : 'Online'}
                                 </div>
                             </div>
                         </div>
@@ -125,12 +170,6 @@ function ChatWidget() {
                             </div>
                         )}
                         <div ref={messagesEndRef} />
-                    </div>
-
-                    <div className="chat-suggestions">
-                        <button className="suggestion-chip" onClick={() => handleSuggestionClick("Pricing info")}>💰 Pricing info</button>
-                        <button className="suggestion-chip" onClick={() => handleSuggestionClick("How does it work?")}>🛠 How does it work?</button>
-                        <button className="suggestion-chip" onClick={() => handleSuggestionClick("Start free trial")}>🚀 Start free trial</button>
                     </div>
 
                     <div className="chat-input-area">

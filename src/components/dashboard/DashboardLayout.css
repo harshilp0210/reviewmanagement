@@ -2,6 +2,15 @@
     display: flex;
     min-height: 100vh;
     background: var(--bg-primary);
+    position: relative;
+    /* Context for absolute buttons */
+}
+
+/* Mobile Controls - Hidden by default */
+.mobile-menu-btn,
+.mobile-close-btn,
+.mobile-only-label {
+    display: none;
 }
 
 /* Sidebar */
@@ -493,22 +502,95 @@
 }
 
 @media (max-width: 768px) {
+
+    /* Mobile Sidebar - Slide out */
     .dashboard-sidebar {
-        width: 72px;
+        width: 260px;
+        transform: translateX(-100%);
+        border-right: none;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
     }
 
-    .dashboard-sidebar .sidebar-label,
-    .dashboard-sidebar .user-details,
-    .dashboard-sidebar .sidebar-logo span {
-        display: none;
+    /* When expanded on mobile */
+    .dashboard-layout.mobile-open .dashboard-sidebar {
+        transform: translateX(0);
     }
 
+    /* Overlay backing */
+    .dashboard-layout.mobile-open::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 99;
+    }
+
+    /* Main Content - Full width */
     .dashboard-main {
-        margin-left: 72px;
+        margin-left: 0 !important;
         padding: var(--space-md);
+        width: 100%;
+    }
+
+    /* Ensure collapsing logic doesn't interfere */
+    .dashboard-layout.collapsed .dashboard-sidebar {
+        width: 260px;
+        /* Don't shrink on mobile */
+    }
+
+    .sidebar-toggle {
+        display: none;
+        /* Hide internal toggle, use header toggle instead */
     }
 
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+
+    .mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 90;
+        width: 40px;
+        height: 40px;
+        background: var(--bg-tertiary);
+        /* Dark bg */
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .mobile-close-btn {
+        display: block;
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 1.25rem;
+        cursor: pointer;
+        margin-left: auto;
+        /* Push to right */
+    }
+
+    .mobile-only-label {
+        display: inline-block;
+        /* Force show label even if collapsed prop is true */
+        font-size: 0.9375rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    /* Override collapsed hiding on mobile when menu is open */
+    .dashboard-layout.mobile-open .dashboard-sidebar .user-details {
+        display: flex;
     }
 }

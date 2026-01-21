@@ -1,9 +1,12 @@
-import { useState } from 'react';
-import { mockReviews } from '../../data/mockData';
+import { useState, useEffect } from 'react';
+import { reviewService } from '../../services/ReviewService';
 import { formatDate, getPlatformName, truncateText } from '../../utils/helpers';
 import './ReviewsInbox.css';
 
 function ReviewsInbox() {
+    const [reviews, setReviews] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [filters, setFilters] = useState({
         platform: '',
         rating: '',
@@ -12,11 +15,31 @@ function ReviewsInbox() {
     });
     const [selectedReview, setSelectedReview] = useState(null);
 
-    const filteredReviews = mockReviews.filter(review => {
+    // Fetch Reviews from Database
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                setLoading(true);
+                const data = await reviewService.getReviews();
+                setReviews(data || []);
+            } catch (err) {
+                console.error("Failed to fetch reviews:", err);
+                setError("Failed to load reviews. Please check your connection.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchReviews();
+    }, []);
+
+    const filteredReviews = reviews.filter(review => {
         if (filters.platform && review.platform !== filters.platform) return false;
         if (filters.rating && review.rating !== parseInt(filters.rating)) return false;
         if (filters.status && review.status !== filters.status) return false;
-        if (filters.keyword && !review.text.toLowerCase().includes(filters.keyword.toLowerCase())) return false;
+        // Check both 'content' (DB) and 'text' (legacy) for search
+        const content = review.content || review.text || '';
+        if (filters.keyword && !content.toLowerCase().includes(filters.keyword.toLowerCase())) return false;
         return true;
     });
 
@@ -29,12 +52,35 @@ function ReviewsInbox() {
     const getStatusBadge = (status) => {
         const labels = {
             'new': 'New',
-            'in-progress': 'In Progress',
+            'details_needed': 'In Progress',
+            'drafted': 'Drafted',
+            'pending_approval': 'Pending',
             'replied': 'Replied',
+            'posted': 'Posted',
             'resolved': 'Resolved'
         };
-        return <span className={`status-badge status-${status}`}>{labels[status]}</span>;
+        // Normalize status to lowercase for class matching
+        const statusClass = (status || 'new').toLowerCase().replace('_', '-');
+        return <span className={`status-badge status-${statusClass}`}>{labels[status] || status}</span>;
     };
+
+    if (loading) {
+        return (
+            <div className="inbox-loading">
+                <div className="spinner"></div>
+                <p>Connecting to secure database...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="inbox-error">
+                <p>⚠️ {error}</p>
+                <button className="btn btn-secondary" onClick={() => window.location.reload()}>Retry</button>
+            </div>
+        );
+    }
 
     return (
         <div className="inbox-container">
@@ -73,8 +119,9 @@ function ReviewsInbox() {
                     >
                         <option value="">All Status</option>
                         <option value="new">New</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="replied">Replied</option>
+                        <option value="drafted">Drafted</option>
+                        <option value="pending_approval">Pending Approval</option>
+                        <option value="posted">Posted</option>
                     </select>
                 </div>
 
@@ -86,7 +133,7 @@ function ReviewsInbox() {
                     <input
                         type="text"
                         className="input search-input"
-                        placeholder="Search keywords (refund, delivery, rude...)"
+                        placeholder="Search reviews..."
                         value={filters.keyword}
                         onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
                     />
@@ -95,6 +142,13 @@ function ReviewsInbox() {
 
             {/* Reviews List */}
             <div className="reviews-list">
+                {reviews.length === 0 && (
+                    <div className="empty-db-state">
+                        <p>No reviews found in database.</p>
+                        <p className="sub-text">You are connected to Supabase, but the table is empty.</p>
+                    </div>
+                )}
+
                 {filteredReviews.map(review => (
                     <div
                         key={review.id}
@@ -102,31 +156,31 @@ function ReviewsInbox() {
                         onClick={() => setSelectedReview(review)}
                     >
                         <div className="review-header">
-                            <span className={`platform-badge badge-${review.platform}`}>
+                            <span className={`platform-badge badge-${review.platform.toLowerCase()}`}>
                                 {getPlatformName(review.platform)}
                             </span>
                             {getStatusBadge(review.status)}
-                            <span className="review-date">{formatDate(review.date)}</span>
+                            <span className="review-date">{formatDate(review.created_at)}</span>
                         </div>
 
                         <div className="review-body">
                             <div className="reviewer-info">
                                 <div className="reviewer-avatar">
-                                    {review.customerName.charAt(0)}
+                                    {(review.author_name || 'A').charAt(0)}
                                 </div>
                                 <div className="reviewer-details">
-                                    <span className="reviewer-name">{review.customerName}</span>
+                                    <span className="reviewer-name">{review.author_name || 'Anonymous'}</span>
                                     <div className="review-rating">
                                         {renderStars(review.rating)}
                                     </div>
                                 </div>
                             </div>
 
-                            <p className="review-text">{truncateText(review.text, 120)}</p>
+                            <p className="review-text">{truncateText(review.content || '', 120)}</p>
 
                             <div className="review-meta">
-                                <span className="review-location">📍 {review.location}</span>
-                                <span className="review-service">{review.service}</span>
+                                {/* Fallback location ID if address is missing */}
+                                <span className="review-location">📍 {review.location_id?.substring(0, 8) || 'Main Location'}</span>
                             </div>
                         </div>
 
@@ -137,18 +191,12 @@ function ReviewsInbox() {
                             <button className="btn btn-secondary btn-sm">
                                 Reply
                             </button>
-                            <button className="btn btn-ghost btn-sm">
-                                Assign
-                            </button>
-                            <button className="btn btn-ghost btn-sm">
-                                Tag
-                            </button>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {filteredReviews.length === 0 && (
+            {filteredReviews.length === 0 && reviews.length > 0 && (
                 <div className="no-results">
                     <span className="no-results-icon">🔍</span>
                     <p>No reviews match your filters</p>

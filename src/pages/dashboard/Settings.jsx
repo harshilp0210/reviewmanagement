@@ -1,30 +1,83 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../supabaseClient';
+import { useToast } from '../../components/ui/Toast';
 import './Settings.css';
 
 const connectedPlatforms = [
-    { name: 'Google Business', icon: 'G', color: '#4285f4', connected: true, reviews: 423 },
-    { name: 'Yelp', icon: 'Y', color: '#ff1a1a', connected: true, reviews: 187 },
-    { name: 'Facebook', icon: 'f', color: '#1877f2', connected: true, reviews: 156 },
-    { name: 'TripAdvisor', icon: 'T', color: '#00aa6c', connected: false, reviews: 0 }
-];
-
-const teamMembers = [
-    { name: 'John Smith', email: 'john@sunsetmotel.com', role: 'Admin', avatar: 'JS' },
-    { name: 'Sarah Johnson', email: 'sarah@sunsetmotel.com', role: 'Manager', avatar: 'SJ' },
-    { name: 'Mike Chen', email: 'mike@sunsetmotel.com', role: 'Staff', avatar: 'MC' }
+    { name: 'Google Business', icon: 'G', color: '#4285f4', connected: false, reviews: 0 },
+    { name: 'Yelp', icon: 'Y', color: '#ff1a1a', connected: false, reviews: 0 },
 ];
 
 function Settings() {
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState('platforms');
+    const [activeTab, setActiveTab] = useState('brand'); // Default to Brand
+    const [orgData, setOrgData] = useState({ name: '', brand_voice: 'friendly' });
+    const [loading, setLoading] = useState(true);
+    const toast = useToast();
+
+    // Fetch Organization Data
+    useEffect(() => {
+        const fetchOrg = async () => {
+            if (!user) return;
+            try {
+                // Get user's org via profile
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('org_id')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile?.org_id) {
+                    const { data: org } = await supabase
+                        .from('organizations')
+                        .select('*')
+                        .eq('id', profile.org_id)
+                        .single();
+
+                    if (org) {
+                        setOrgData({
+                            id: org.id,
+                            name: org.name,
+                            brand_voice: org.settings?.brand_voice || 'friendly'
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Error loading settings:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOrg();
+    }, [user]);
+
+    const handleSaveBrand = async (e) => {
+        e.preventDefault();
+        try {
+            const { error } = await supabase
+                .from('organizations')
+                .update({
+                    name: orgData.name,
+                    settings: { brand_voice: orgData.brand_voice }
+                })
+                .eq('id', orgData.id);
+
+            if (error) throw error;
+            toast.success("Settings Saved! 💾");
+        } catch (error) {
+            toast.error("Failed to save settings.");
+        }
+    };
+
+    if (loading) return <div className="p-8 text-center text-white">Loading Settings...</div>;
 
     return (
         <div className="settings-page">
             <div className="dashboard-header">
                 <div className="dashboard-title">
                     <h1>⚙️ Settings</h1>
-                    <p>Manage your account, team, and integrations</p>
+                    <p>Manage your organization and preferences</p>
                 </div>
             </div>
 
@@ -32,44 +85,68 @@ function Settings() {
                 {/* Settings Navigation */}
                 <nav className="settings-nav">
                     <button
+                        className={`settings-nav-btn ${activeTab === 'brand' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('brand')}
+                    >
+                        <span>🏢</span> Brand & Voice
+                    </button>
+                    <button
                         className={`settings-nav-btn ${activeTab === 'platforms' ? 'active' : ''}`}
                         onClick={() => setActiveTab('platforms')}
                     >
-                        <span>🔗</span> Connected Platforms
-                    </button>
-                    <button
-                        className={`settings-nav-btn ${activeTab === 'team' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('team')}
-                    >
-                        <span>👥</span> Team Members
-                    </button>
-                    <button
-                        className={`settings-nav-btn ${activeTab === 'notifications' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('notifications')}
-                    >
-                        <span>🔔</span> Notifications
-                    </button>
-                    <button
-                        className={`settings-nav-btn ${activeTab === 'billing' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('billing')}
-                    >
-                        <span>💳</span> Billing
+                        <span>🔗</span> Integrations
                     </button>
                     <button
                         className={`settings-nav-btn ${activeTab === 'account' ? 'active' : ''}`}
                         onClick={() => setActiveTab('account')}
                     >
-                        <span>👤</span> Account
+                        <span>👤</span> My Account
                     </button>
                 </nav>
 
                 {/* Settings Content */}
                 <div className="settings-content">
+
+                    {/* Brand Voice Settings (Real DB Config) */}
+                    {activeTab === 'brand' && (
+                        <div className="settings-section">
+                            <div className="section-header">
+                                <h3>Brand Settings</h3>
+                                <p className="section-desc">Customize how AI responds to your reviews.</p>
+                            </div>
+
+                            <form className="account-form" onSubmit={handleSaveBrand}>
+                                <div className="form-group">
+                                    <label>Business Name</label>
+                                    <input
+                                        type="text"
+                                        value={orgData.name}
+                                        onChange={(e) => setOrgData({ ...orgData, name: e.target.value })}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>AI Brand Voice</label>
+                                    <select
+                                        value={orgData.brand_voice}
+                                        onChange={(e) => setOrgData({ ...orgData, brand_voice: e.target.value })}
+                                        className="settings-select"
+                                    >
+                                        <option value="professional">Professional & Formal</option>
+                                        <option value="friendly">Friendly & Casual</option>
+                                        <option value="humorous">Witty & Humorous</option>
+                                        <option value="empathetic">Empathetic & Apologetic</option>
+                                    </select>
+                                    <p className="field-hint">This controls the tone of drafted replies.</p>
+                                </div>
+                                <button type="submit" className="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    )}
+
                     {activeTab === 'platforms' && (
                         <div className="settings-section">
                             <h3>Connected Platforms</h3>
-                            <p className="section-desc">Manage your review platform connections</p>
-
+                            <p className="section-desc">Connect external review sources.</p>
                             <div className="platforms-grid">
                                 {connectedPlatforms.map((platform, index) => (
                                     <div key={index} className="platform-card">
@@ -79,13 +156,13 @@ function Settings() {
                                             </div>
                                             <div>
                                                 <h4>{platform.name}</h4>
-                                                {platform.connected && (
-                                                    <span className="platform-reviews">{platform.reviews} reviews synced</span>
-                                                )}
+                                                <span className="platform-status">
+                                                    {platform.connected ? 'Connected' : 'Not Connected'}
+                                                </span>
                                             </div>
                                         </div>
-                                        <button className={`btn ${platform.connected ? 'btn-ghost' : 'btn-primary'}`}>
-                                            {platform.connected ? 'Disconnect' : 'Connect'}
+                                        <button className={`btn ${platform.connected ? 'btn-ghost' : 'btn-secondary'}`}>
+                                            {platform.connected ? 'Manage' : 'Connect'}
                                         </button>
                                     </div>
                                 ))}
@@ -93,140 +170,24 @@ function Settings() {
                         </div>
                     )}
 
-                    {activeTab === 'team' && (
-                        <div className="settings-section">
-                            <div className="section-header">
-                                <div>
-                                    <h3>Team Members</h3>
-                                    <p className="section-desc">Manage who has access to your account</p>
-                                </div>
-                                <button className="btn btn-primary">+ Invite Member</button>
-                            </div>
-
-                            <div className="team-list">
-                                {teamMembers.map((member, index) => (
-                                    <div key={index} className="team-member">
-                                        <div className="member-avatar">{member.avatar}</div>
-                                        <div className="member-info">
-                                            <span className="member-name">{member.name}</span>
-                                            <span className="member-email">{member.email}</span>
-                                        </div>
-                                        <span className={`member-role ${member.role.toLowerCase()}`}>{member.role}</span>
-                                        <button className="btn btn-ghost btn-sm">Edit</button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'notifications' && (
-                        <div className="settings-section">
-                            <h3>Notification Preferences</h3>
-                            <p className="section-desc">Choose how you want to be notified</p>
-
-                            <div className="notification-settings">
-                                <div className="notification-item">
-                                    <div>
-                                        <h4>New Review Alerts</h4>
-                                        <p>Get notified when you receive a new review</p>
-                                    </div>
-                                    <label className="toggle">
-                                        <input type="checkbox" defaultChecked />
-                                        <span className="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                <div className="notification-item">
-                                    <div>
-                                        <h4>Negative Review Alerts</h4>
-                                        <p>Immediate notification for reviews 3 stars or below</p>
-                                    </div>
-                                    <label className="toggle">
-                                        <input type="checkbox" defaultChecked />
-                                        <span className="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                <div className="notification-item">
-                                    <div>
-                                        <h4>Weekly Summary</h4>
-                                        <p>Receive a weekly report of your review performance</p>
-                                    </div>
-                                    <label className="toggle">
-                                        <input type="checkbox" defaultChecked />
-                                        <span className="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                <div className="notification-item">
-                                    <div>
-                                        <h4>Email Notifications</h4>
-                                        <p>Send notifications to your email</p>
-                                    </div>
-                                    <label className="toggle">
-                                        <input type="checkbox" defaultChecked />
-                                        <span className="toggle-slider"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'billing' && (
-                        <div className="settings-section">
-                            <h3>Billing & Subscription</h3>
-                            <p className="section-desc">Manage your subscription and payment method</p>
-
-                            <div className="billing-card">
-                                <div className="current-plan">
-                                    <span className="plan-badge">Professional</span>
-                                    <h4>$79/month</h4>
-                                    <ul>
-                                        <li>✓ Up to 5 locations</li>
-                                        <li>✓ AI-powered replies</li>
-                                        <li>✓ Advanced analytics</li>
-                                        <li>✓ Priority support</li>
-                                    </ul>
-                                    <button className="btn btn-secondary">Upgrade Plan</button>
-                                </div>
-                                <div className="payment-info">
-                                    <h4>Payment Method</h4>
-                                    <div className="payment-card">
-                                        <span>💳</span>
-                                        <span>•••• •••• •••• 4242</span>
-                                        <span>Expires 12/26</span>
-                                    </div>
-                                    <button className="btn btn-ghost">Update Payment</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
                     {activeTab === 'account' && (
                         <div className="settings-section">
-                            <h3>Account Settings</h3>
-                            <p className="section-desc">Update your personal information</p>
-
-                            <form className="account-form">
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label>Full Name</label>
-                                        <input type="text" defaultValue={user?.name || 'Demo User'} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Email</label>
-                                        <input type="email" defaultValue={user?.email || 'demo@example.com'} />
-                                    </div>
+                            <h3>My Account</h3>
+                            <p className="section-desc">Your personal login details.</p>
+                            <div className="account-info-card">
+                                <div className="info-row">
+                                    <label>Email ID</label>
+                                    <span>{user?.email}</span>
                                 </div>
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label>Business Name</label>
-                                        <input type="text" defaultValue={user?.business || 'Sunset Motel'} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Phone</label>
-                                        <input type="tel" defaultValue="+1 (555) 123-4567" />
-                                    </div>
+                                <div className="info-row">
+                                    <label>User ID</label>
+                                    <span className="mono">{user?.id}</span>
                                 </div>
-                                <button type="submit" className="btn btn-primary">Save Changes</button>
-                            </form>
+                                <div className="info-row">
+                                    <label>Role</label>
+                                    <span className="role-badge">Admin</span>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

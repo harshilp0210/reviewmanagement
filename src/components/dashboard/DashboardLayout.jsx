@@ -13,6 +13,7 @@ const menuItems = [
 
 function DashboardLayout() {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
     const { user, logout } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
@@ -29,8 +30,22 @@ function DashboardLayout() {
         return location.pathname.startsWith(path);
     };
 
+    // Close mobile menu on route change
+    const handleNavClick = () => {
+        setMobileOpen(false);
+    };
+
     return (
-        <div className={`dashboard-layout ${sidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className={`dashboard-layout ${sidebarCollapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
+            {/* Mobile Header Button */}
+            <button
+                className="mobile-menu-btn"
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label="Toggle Menu"
+            >
+                ☰
+            </button>
+
             {/* Sidebar */}
             <aside className="dashboard-sidebar">
                 <div className="sidebar-header">
@@ -44,6 +59,13 @@ function DashboardLayout() {
                     >
                         {sidebarCollapsed ? '→' : '←'}
                     </button>
+                    {/* Mobile Close Button */}
+                    <button
+                        className="mobile-close-btn"
+                        onClick={() => setMobileOpen(false)}
+                    >
+                        ✕
+                    </button>
                 </div>
 
                 <nav className="sidebar-nav">
@@ -52,9 +74,12 @@ function DashboardLayout() {
                             key={item.path}
                             to={item.path}
                             className={`sidebar-link ${isActive(item.path, item.exact) ? 'active' : ''}`}
+                            onClick={handleNavClick}
                         >
                             <span className="sidebar-icon">{item.icon}</span>
                             {!sidebarCollapsed && <span className="sidebar-label">{item.label}</span>}
+                            {/* Always show label on mobile/slide-out */}
+                            <span className="mobile-only-label">{item.label}</span>
                         </Link>
                     ))}
                 </nav>
@@ -64,7 +89,7 @@ function DashboardLayout() {
                         <div className="user-avatar">
                             {user?.name?.charAt(0) || 'U'}
                         </div>
-                        {!sidebarCollapsed && (
+                        {(!sidebarCollapsed || mobileOpen) && (
                             <div className="user-details">
                                 <span className="user-name">{user?.name || 'User'}</span>
                                 <span className="user-business">{user?.business || 'Business'}</span>
@@ -76,6 +101,9 @@ function DashboardLayout() {
                     </button>
                 </div>
             </aside>
+
+            {/* Backdrop Click to Close */}
+            {mobileOpen && <div className="mobile-backdrop" onClick={() => setMobileOpen(false)} />}
 
             {/* Main Content */}
             <main className="dashboard-main">
