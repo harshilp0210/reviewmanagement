@@ -71,21 +71,6 @@ function ContactForm({ onSuccess }) {
                         </p>
 
                         <div className="contact-details">
-                            <div className="contact-item">
-                                <span className="contact-icon">📍</span>
-                                <div>
-                                    <strong>Address</strong>
-                                    <p>123 Business Ave, Suite 100<br />San Francisco, CA 94102</p>
-                                </div>
-                            </div>
-
-                            <div className="contact-item">
-                                <span className="contact-icon">📞</span>
-                                <div>
-                                    <strong>Phone</strong>
-                                    <p>1-800-REVIEWS</p>
-                                </div>
-                            </div>
 
                             <div className="contact-item">
                                 <span className="contact-icon">✉️</span>
