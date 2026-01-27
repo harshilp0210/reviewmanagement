@@ -91,7 +91,7 @@ function ContactForm({ onSuccess }) {
                                 <span className="contact-icon">✉️</span>
                                 <div>
                                     <strong>Email</strong>
-                                    <p>hello@reviewmanager.com</p>
+                                    <p>openrize@gmail.com</p>
                                 </div>
                             </div>
                         </div>
