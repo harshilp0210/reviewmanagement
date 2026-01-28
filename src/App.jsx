@@ -13,6 +13,7 @@ import CaseStudiesPage from './pages/CaseStudiesPage';
 import IntegrationsPage from './pages/IntegrationsPage';
 import BlogPage from './pages/BlogPage';
 import PricingPage from './pages/PricingPage';
+import ContactPage from './pages/ContactPage';
 import BenefitsPage from './pages/BenefitsPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -81,6 +82,7 @@ function Navigation({ onMenuOpen, onGetStarted, onSignIn }) {
           <Link to="/pricing" className={isActive('/pricing')}>Pricing</Link>
           <Link to="/case-studies" className={isActive('/case-studies')}>Case Studies</Link>
           <Link to="/blog" className={isActive('/blog')}>Blog</Link>
+          <Link to="/contact" className={isActive('/contact')}>Contact Us</Link>
         </div>
         <div className="nav-actions">
           {isAuthenticated ? (
@@ -181,6 +183,7 @@ function AppContent() {
           <Route path="/integrations" element={<IntegrationsPage onGetStarted={handleGetStarted} />} />
           <Route path="/blog" element={<BlogPage onGetStarted={handleGetStarted} />} />
           <Route path="/pricing" element={<PricingPage onSuccess={handleContactSuccess} onGetStarted={handleGetStarted} />} />
+          <Route path="/contact" element={<ContactPage onSuccess={handleContactSuccess} onGetStarted={handleGetStarted} />} />
 
           {/* Dashboard (Protected) */}
           <Route path="/dashboard" element={

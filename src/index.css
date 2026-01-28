@@ -362,7 +362,7 @@ p {
 
 /* ===== SECTION STYLING ===== */
 .section {
-  padding: var(--space-3xl) var(--space-xl);
+  padding: var(--space-xl) var(--space-lg);
 }
 
 .section-header {
@@ -380,7 +380,7 @@ p {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 0 var(--space-lg);
 }

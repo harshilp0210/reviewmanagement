@@ -43,10 +43,10 @@ function Footer({ onGetStarted, showCTA = true }) {
                                 The all-in-one platform for managing your online reviews and building a stellar reputation.
                             </p>
                             <div className="social-links">
-                                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Twitter">𝕏</a>
-                                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="LinkedIn">in</a>
+                                <a href="https://x.com/home" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="X (Twitter)">𝕏</a>
+                                <a href="https://www.linkedin.com/in/openrize/" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="LinkedIn">in</a>
                                 <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Facebook">f</a>
-                                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Instagram">📷</a>
+                                <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Instagram">📷</a>
                             </div>
                         </div>
 
@@ -75,7 +75,7 @@ function Footer({ onGetStarted, showCTA = true }) {
                             <ul>
                                 <li><a href="#">About Us</a></li>
                                 <li><a href="#">Careers</a></li>
-                                <li><Link to="/pricing">Contact</Link></li>
+                                <li><Link to="/contact">Contact</Link></li>
                                 <li><a href="#">Press Kit</a></li>
                             </ul>
                         </div>

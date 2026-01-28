@@ -59,6 +59,10 @@ function MobileMenu({ isOpen, onClose }) {
                         <span className="mobile-menu-icon">🔗</span>
                         Integrations
                     </Link>
+                    <Link to="/contact" className="mobile-menu-link" onClick={onClose}>
+                        <span className="mobile-menu-icon">✉️</span>
+                        Contact Us
+                    </Link>
                 </nav>
 
                 <div className="mobile-menu-actions">
