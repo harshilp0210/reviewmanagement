@@ -45,7 +45,6 @@ function Footer({ onGetStarted, showCTA = true }) {
                             <div className="social-links">
                                 <a href="https://x.com/home" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="X (Twitter)">𝕏</a>
                                 <a href="https://www.linkedin.com/in/openrize/" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="LinkedIn">in</a>
-                                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Facebook">f</a>
                                 <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Instagram">📷</a>
                             </div>
                         </div>
