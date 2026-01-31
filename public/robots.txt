@@ -1,0 +1,11 @@
+# robots.txt for ReviewManager
+
+# Allow all crawlers to access all content
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://reviewmanagment.app/sitemap.xml
+
+# Crawl-delay (optional, helps prevent overloading the server)
+Crawl-delay: 1
