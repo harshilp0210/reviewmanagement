@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,10 +44,13 @@ export function DemoForm() {
         },
     });
 
+    const router = useRouter();
+
     function onSubmit(values: z.infer<typeof formSchema>) {
         // In a real app, this would send data to a server
         console.log(values);
-        alert("Thank you! We will contact you shortly.");
+        alert("Thank you! Redirecting you to the live demo...");
+        router.push("/dashboard");
     }
 
     return (

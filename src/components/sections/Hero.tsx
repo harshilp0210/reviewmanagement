@@ -15,7 +15,7 @@ export function Hero() {
                         </p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                        <Link href="/demo">
+                        <Link href="/dashboard">
                             <Button size="lg" className="h-12 px-8 text-base w-full sm:w-auto shadow-lg hover:shadow-xl transition-all">Start Free Trial</Button>
                         </Link>
                         <Link href="/demo">

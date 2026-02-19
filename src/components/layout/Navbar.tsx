@@ -41,7 +41,10 @@ export function Navbar() {
                                 {link.name}
                             </Link>
                         ))}
-                        <Link href="/demo">
+                        <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mr-4">
+                            Sign In
+                        </Link>
+                        <Link href="/dashboard">
                             <Button>Start Free Trial</Button>
                         </Link>
                     </div>
