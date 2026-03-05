@@ -2,87 +2,140 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Menu, X, Star, ChevronDown } from "lucide-react";
 
 export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [scrolled, setScrolled] = React.useState(false);
 
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+    React.useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 20);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     const navLinks = [
         { name: "Features", href: "/features" },
         { name: "Pricing", href: "/pricing" },
         { name: "About", href: "/about" },
-        { name: "Contact", href: "/contact" },
+        { name: "Blog", href: "/blog" },
     ];
 
     return (
-        <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border/50 shadow-sm supports-[backdrop-filter]:bg-background/60">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex h-16 items-center justify-between">
-                    <div className="flex items-center">
-                        <Link href="/" className="flex items-center space-x-2">
-                            <span className="text-xl font-bold tracking-tight text-primary">
-                                ReviewManagement
-                            </span>
-                        </Link>
-                    </div>
+        <nav
+            className="fixed top-0 w-full z-50 transition-all duration-500"
+            style={{
+                background: scrolled
+                    ? "rgba(8, 11, 20, 0.85)"
+                    : "transparent",
+                backdropFilter: scrolled ? "blur(20px)" : "none",
+                borderBottom: scrolled ? "1px solid rgba(99, 102, 241, 0.15)" : "1px solid transparent",
+                boxShadow: scrolled ? "0 4px 40px rgba(0,0,0,0.4)" : "none",
+            }}
+        >
+            <div className="container mx-auto px-6 lg:px-8">
+                <div className="flex h-18 items-center justify-between py-4">
+                    {/* Logo */}
+                    <Link href="/" className="flex items-center gap-2.5 group">
+                        <div
+                            className="w-8 h-8 rounded-lg flex items-center justify-center relative"
+                            style={{
+                                background: "linear-gradient(135deg, #6366f1, #7c3aed)",
+                                boxShadow: "0 0 20px rgba(99, 102, 241, 0.5)",
+                            }}
+                        >
+                            <Star className="h-4 w-4 text-white fill-white" />
+                        </div>
+                        <span
+                            className="text-lg font-bold tracking-tight"
+                            style={{
+                                background: "linear-gradient(135deg, #f8faff, #c4b5fd)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                                backgroundClip: "text",
+                            }}
+                        >
+                            ReviewManagement
+                        </span>
+                    </Link>
 
                     {/* Desktop Nav */}
-                    <div className="hidden md:flex md:items-center md:space-x-8">
+                    <div className="hidden md:flex md:items-center md:gap-8">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                                className="text-sm font-medium transition-all duration-200 relative group"
+                                style={{ color: "rgba(203, 213, 225, 0.8)" }}
                             >
-                                {link.name}
+                                <span className="group-hover:text-white transition-colors">{link.name}</span>
+                                <span
+                                    className="absolute -bottom-0.5 left-0 h-px w-0 group-hover:w-full transition-all duration-300"
+                                    style={{ background: "linear-gradient(90deg, #6366f1, #06b6d4)" }}
+                                />
                             </Link>
                         ))}
-                        <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mr-4">
+                    </div>
+
+                    {/* CTA Buttons */}
+                    <div className="hidden md:flex md:items-center md:gap-3">
+                        <Link
+                            href="/dashboard"
+                            className="text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200"
+                            style={{ color: "rgba(203, 213, 225, 0.8)" }}
+                        >
                             Sign In
                         </Link>
                         <Link href="/dashboard">
-                            <Button>Start Free Trial</Button>
+                            <button
+                                className="btn-primary text-sm font-semibold px-5 py-2.5 rounded-xl text-white cursor-pointer"
+                            >
+                                Start Free Trial →
+                            </button>
                         </Link>
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <div className="flex md:hidden">
-                        <button
-                            onClick={toggleMenu}
-                            className="text-muted-foreground hover:text-foreground p-2"
-                            aria-label="Toggle menu"
-                        >
-                            {isMenuOpen ? (
-                                <X className="h-6 w-6" />
-                            ) : (
-                                <Menu className="h-6 w-6" />
-                            )}
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="md:hidden p-2 rounded-lg transition-colors"
+                        style={{ color: "rgba(203, 213, 225, 0.8)" }}
+                    >
+                        {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                    </button>
                 </div>
             </div>
 
             {/* Mobile Nav */}
             {isMenuOpen && (
-                <div className="md:hidden border-t">
-                    <div className="space-y-1 px-4 pb-3 pt-2">
+                <div
+                    className="md:hidden border-t"
+                    style={{
+                        background: "rgba(8, 11, 20, 0.98)",
+                        borderColor: "rgba(99, 102, 241, 0.2)",
+                        backdropFilter: "blur(20px)",
+                    }}
+                >
+                    <div className="px-6 py-6 space-y-3">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="block px-3 py-2 text-base font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md transition-colors"
+                                className="block py-3 text-sm font-medium border-b transition-colors"
+                                style={{
+                                    color: "rgba(203, 213, 225, 0.8)",
+                                    borderColor: "rgba(255,255,255,0.05)",
+                                }}
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 {link.name}
                             </Link>
                         ))}
-                        <div className="pt-2">
-                            <Link href="/demo" onClick={() => setIsMenuOpen(false)}>
-                                <Button className="w-full">Start Free Trial</Button>
+                        <div className="pt-4">
+                            <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                                <button className="btn-primary w-full text-sm font-semibold py-3 rounded-xl text-white">
+                                    Start Free Trial →
+                                </button>
                             </Link>
                         </div>
                     </div>

@@ -1,89 +1,124 @@
 "use client";
+import { useAuth } from "@/lib/auth";
+import { useEffect, useState } from "react";
+import { getBusinessByOwner, saveBusiness, Business } from "@/lib/store";
+import { Save, Copy, Check, Globe } from "lucide-react";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Loader2 } from "lucide-react";
+const CATEGORIES = ["Restaurant", "Retail", "Liquor Store", "Clinic", "Salon", "Hotel", "Gym", "Cafe", "Other"];
 
 export default function SettingsPage() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSaved, setIsSaved] = useState(false);
+    const { user } = useAuth();
+    const [business, setBusiness] = useState<Business | null>(null);
+    const [form, setForm] = useState({ name: "", category: "", description: "", phone: "", website: "", address: "" });
+    const [saved, setSaved] = useState(false);
+    const [copied, setCopied] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    useEffect(() => {
+        if (!user) return;
+        const biz = getBusinessByOwner(user.id);
+        if (biz) {
+            setBusiness(biz);
+            setForm({ name: biz.name, category: biz.category, description: biz.description, phone: biz.phone, website: biz.website, address: biz.address });
+        }
+    }, [user]);
+
+    const setF = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+        setForm(f => ({ ...f, [k]: e.target.value }));
+
+    const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
-        setIsSaved(false);
+        if (!business) return;
+        const updated = { ...business, ...form };
+        saveBusiness(updated);
+        setBusiness(updated);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+    };
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    const publicUrl = typeof window !== "undefined" ? `${window.location.origin}/business/${business?.slug}` : "";
 
-        setIsLoading(false);
-        setIsSaved(true);
-
-        // Reset success state after 2 seconds
-        setTimeout(() => setIsSaved(false), 2000);
+    const copyLink = () => {
+        navigator.clipboard.writeText(publicUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     return (
-        <div className="p-8 space-y-8 max-w-2xl">
-            <div>
-                <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
-                <p className="text-muted-foreground">
-                    Manage your account settings and preferences.
-                </p>
+        <div className="h-screen overflow-y-auto">
+            <div className="p-8 max-w-2xl">
+                <div className="mb-8">
+                    <h1 className="text-2xl font-bold text-white">Settings</h1>
+                    <p className="text-muted-foreground text-sm mt-1">Manage your business profile and preferences</p>
+                </div>
+
+                {/* Public Link */}
+                <div className="glass-card rounded-2xl p-5 mb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Globe className="w-4 h-4 text-primary" />
+                        <h2 className="text-sm font-semibold text-foreground">Your Public Review Page</h2>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3">Share this link with customers so they can leave reviews for your business.</p>
+                    <div className="flex items-center gap-2">
+                        <div className="flex-1 px-3 py-2 rounded-xl bg-secondary/50 border border-border text-xs text-muted-foreground font-mono truncate">
+                            {publicUrl || "Loading..."}
+                        </div>
+                        <button onClick={copyLink}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition-colors text-xs font-medium flex-shrink-0">
+                            {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                            {copied ? "Copied!" : "Copy"}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Business Profile */}
+                <div className="glass-card rounded-2xl p-6">
+                    <h2 className="text-sm font-semibold text-foreground mb-5">Business Profile</h2>
+                    <form onSubmit={handleSave} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-medium text-muted-foreground mb-1.5">Business Name</label>
+                                <input value={form.name} onChange={setF("name")} required
+                                    className="w-full px-4 py-2.5 rounded-xl bg-secondary/50 border border-border text-foreground focus:outline-none focus:border-primary transition-colors text-sm" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-muted-foreground mb-1.5">Category</label>
+                                <select value={form.category} onChange={setF("category")}
+                                    className="w-full px-4 py-2.5 rounded-xl bg-secondary/50 border border-border text-foreground focus:outline-none focus:border-primary transition-colors text-sm">
+                                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-muted-foreground mb-1.5">Description</label>
+                            <textarea value={form.description} onChange={setF("description")} rows={3}
+                                placeholder="Tell customers about your business..."
+                                className="w-full px-4 py-2.5 rounded-xl bg-secondary/50 border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors text-sm resize-none" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-medium text-muted-foreground mb-1.5">Phone</label>
+                                <input value={form.phone} onChange={setF("phone")} placeholder="(312) 555-0100"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-secondary/50 border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors text-sm" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-muted-foreground mb-1.5">Website</label>
+                                <input value={form.website} onChange={setF("website")} placeholder="https://yourbusiness.com"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-secondary/50 border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors text-sm" />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-muted-foreground mb-1.5">Address</label>
+                            <input value={form.address} onChange={setF("address")} placeholder="123 Main St, City, State ZIP"
+                                className="w-full px-4 py-2.5 rounded-xl bg-secondary/50 border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors text-sm" />
+                        </div>
+                        <button type="submit"
+                            className="flex items-center gap-2 px-6 py-2.5 rounded-xl btn-primary text-white font-semibold text-sm transition-all">
+                            {saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+                            {saved ? "Saved!" : "Save Changes"}
+                        </button>
+                    </form>
+                </div>
             </div>
-
-            <form onSubmit={handleSubmit}>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Profile Information</CardTitle>
-                        <CardDescription>
-                            Update your personal and business details.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <label htmlFor="name" className="text-sm font-medium">Full Name</label>
-                            <Input id="name" defaultValue="Demo User" />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="email" className="text-sm font-medium">Email</label>
-                            <Input id="email" type="email" defaultValue="demo@example.com" />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="business" className="text-sm font-medium">Business Name</label>
-                            <Input id="business" defaultValue="My Awesome Business" />
-                        </div>
-                    </CardContent>
-                    <CardFooter>
-                        <Button type="submit" disabled={isLoading}>
-                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {!isLoading && isSaved && <Check className="mr-2 h-4 w-4" />}
-                            {isSaved ? "Saved" : "Save Changes"}
-                        </Button>
-                    </CardFooter>
-                </Card>
-            </form>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Notifications</CardTitle>
-                    <CardDescription>
-                        Configure how you receive alerts.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex items-center space-x-2">
-                        <input type="checkbox" id="email-notif" className="h-4 w-4 rounded border-gray-300" defaultChecked />
-                        <label htmlFor="email-notif" className="text-sm font-medium">Email Alerts</label>
-                    </div>
-                    <div className="flex items-center space-x-2 mt-2">
-                        <input type="checkbox" id="sms-notif" className="h-4 w-4 rounded border-gray-300" />
-                        <label htmlFor="sms-notif" className="text-sm font-medium">SMS Alerts</label>
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     );
 }

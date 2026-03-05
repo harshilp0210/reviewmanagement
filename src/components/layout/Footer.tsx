@@ -1,126 +1,128 @@
+"use client";
+
 import Link from "next/link";
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Star, ArrowRight, Github } from "lucide-react";
 
 export function Footer() {
     return (
-        <footer className="bg-background border-t border-border/40">
-            <div className="container mx-auto px-4 py-16 md:py-20">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-8">
-                    <div className="space-y-6">
-                        <h3 className="text-xl font-bold tracking-tight text-primary">ReviewManagement</h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-                            Powerful review management software to grow your business
-                            reputation. Collect, manage, and respond to reviews from one
-                            platform.
+        <footer className="relative bg-[#080B14] overflow-hidden pt-24 pb-12">
+            {/* Background divider */}
+            <div className="section-divider absolute top-0 left-0 right-0" />
+
+            {/* Decorative background orb */}
+            <div
+                className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full opacity-10 blur-[100px]"
+                style={{ background: "#3b82f6" }}
+            />
+
+            <div className="container mx-auto px-6 lg:px-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-20">
+                    <div className="lg:col-span-5 space-y-8">
+                        {/* Logo */}
+                        <Link href="/" className="flex items-center gap-2.5 group">
+                            <div
+                                className="w-8 h-8 rounded-lg flex items-center justify-center relative"
+                                style={{
+                                    background: "linear-gradient(135deg, #6366f1, #7c3aed)",
+                                    boxShadow: "0 0 20px rgba(99, 102, 241, 0.5)",
+                                }}
+                            >
+                                <Star className="h-4 w-4 text-white fill-white" />
+                            </div>
+                            <span className="text-xl font-bold tracking-tight text-white">ReviewManagement</span>
+                        </Link>
+
+                        <p className="text-lg leading-relaxed max-w-sm text-slate-400">
+                            The intelligent platform for modern business reputation. From zero reviews to market dominance.
                         </p>
-                        <div className="flex space-x-5">
-                            <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Facebook className="h-5 w-5" />
-                            </Link>
-                            <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Twitter className="h-5 w-5" />
-                            </Link>
-                            <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Instagram className="h-5 w-5" />
-                            </Link>
-                            <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Linkedin className="h-5 w-5" />
-                            </Link>
+
+                        <div className="flex gap-4">
+                            {[
+                                { icon: Twitter, href: "#" },
+                                { icon: Linkedin, href: "#" },
+                                { icon: Instagram, href: "#" },
+                                { icon: Github, href: "#" },
+                            ].map((social, i) => (
+                                <Link
+                                    key={i}
+                                    href={social.href}
+                                    className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white/5 border border-white/5 hover:border-violet-500/50 group"
+                                >
+                                    <social.icon className="h-5 w-5 text-slate-500 group-hover:text-white transition-colors" />
+                                </Link>
+                            ))}
                         </div>
                     </div>
 
-                    <div>
-                        <h4 className="font-semibold mb-6">Product</h4>
-                        <ul className="space-y-4 text-sm">
-                            <li>
-                                <Link href="/features" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    Features
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    Pricing
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/demo" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    Request Demo
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    Blog
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+                    <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-12">
+                        <div>
+                            <h4 className="font-bold text-white mb-6 tracking-wide uppercase text-xs">Product</h4>
+                            <ul className="space-y-4">
+                                {["Features", "Pricing", "Integrations", "API Docs", "Changelog"].map((item) => (
+                                    <li key={item}>
+                                        <Link href="#" className="text-sm text-slate-500 hover:text-white transition-colors">{item}</Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
-                    <div>
-                        <h4 className="font-semibold mb-6">Industries</h4>
-                        <ul className="space-y-4 text-sm">
-                            <li>
-                                <Link
-                                    href="/review-management-for-restaurants"
-                                    className="text-muted-foreground hover:text-foreground transition-colors"
-                                >
-                                    Restaurants
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="/review-management-for-retail"
-                                    className="text-muted-foreground hover:text-foreground transition-colors"
-                                >
-                                    Retail
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="/review-management-for-clinics"
-                                    className="text-muted-foreground hover:text-foreground transition-colors"
-                                >
-                                    Clinics
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="/review-management-for-liquor-stores"
-                                    className="text-muted-foreground hover:text-foreground transition-colors"
-                                >
-                                    Liquor Stores
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+                        <div>
+                            <h4 className="font-bold text-white mb-6 tracking-wide uppercase text-xs">Industry</h4>
+                            <ul className="space-y-4 text-sm">
+                                {[
+                                    { label: "Restaurants", href: "/review-management-for-restaurants" },
+                                    { label: "Retail Stores", href: "/review-management-for-retail" },
+                                    { label: "Medical Clinics", href: "/review-management-for-clinics" },
+                                    { label: "Liquor Stores", href: "/review-management-for-liquor-stores" },
+                                ].map((item) => (
+                                    <li key={item.label}>
+                                        <Link
+                                            href={item.href}
+                                            className="text-slate-500 hover:text-white transition-colors"
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
-                    <div>
-                        <h4 className="font-semibold mb-6">Support</h4>
-                        <ul className="space-y-4 text-sm">
-                            <li>
-                                <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    Contact Us
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    About Us
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    Privacy Policy
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    Terms of Service
-                                </Link>
-                            </li>
-                        </ul>
+                        <div>
+                            <h4 className="font-bold text-white mb-6 tracking-wide uppercase text-xs">Company</h4>
+                            <ul className="space-y-4 text-sm">
+                                {["About Us", "Contact", "Privacy Policy", "Terms of Service", "Trust Center"].map((item) => (
+                                    <li key={item}>
+                                        <Link href="#" className="text-slate-500 hover:text-white transition-colors">{item}</Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
                 </div>
-                <div className="mt-16 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
+
+                {/* Newsletter signup inline */}
+                <div className="flex flex-col md:flex-row items-center justify-between py-12 border-y border-white/5 gap-8 mb-12">
+                    <div className="text-left">
+                        <h4 className="text-xl font-bold text-white mb-1">Stay ahead of the curve</h4>
+                        <p className="text-sm text-slate-500">Get the latest reputation management tips delivered directly to your inbox.</p>
+                    </div>
+                    <div className="flex w-full md:w-auto gap-2">
+                        <input
+                            type="email"
+                            placeholder="you@company.com"
+                            className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-violet-500/50 transition-colors w-full md:w-64"
+                        />
+                        <button className="btn-primary text-sm font-bold px-6 py-3 rounded-xl text-white">Subscribe</button>
+                    </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-slate-500 text-xs font-medium uppercase tracking-[0.1em]">
                     <p>&copy; {new Date().getFullYear()} ReviewManagement. All rights reserved.</p>
+                    <div className="flex gap-8">
+                        <Link href="#" className="hover:text-white transition-colors">Privacy</Link>
+                        <Link href="#" className="hover:text-white transition-colors">Terms</Link>
+                        <Link href="#" className="hover:text-white transition-colors">Cookies</Link>
+                    </div>
                 </div>
             </div>
         </footer>
