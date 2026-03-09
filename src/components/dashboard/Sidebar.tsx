@@ -4,14 +4,18 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import {
     LayoutDashboard, Star, BarChart3, Lightbulb,
-    Settings, LogOut, Zap, ChevronRight, Globe
+    Settings, LogOut, Zap, ChevronRight, Globe,
+    Bell, CheckSquare, Send
 } from "lucide-react";
 import { getBusinessByOwner } from "@/lib/store";
 import { useEffect, useState } from "react";
 
 const NAV = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
-    { href: "/dashboard/reviews", icon: Star, label: "Reviews" },
+    { href: "/dashboard/reviews", icon: Star, label: "Inbox" },
+    { href: "/dashboard/tasks", icon: CheckSquare, label: "Action Tracker" },
+    { href: "/dashboard/alerts", icon: Bell, label: "Alerts" },
+    { href: "/dashboard/requests", icon: Send, label: "Automations" },
     { href: "/dashboard/analytics", icon: BarChart3, label: "Analytics" },
     { href: "/dashboard/ai-insights", icon: Lightbulb, label: "AI Insights" },
     { href: "/dashboard/settings", icon: Settings, label: "Settings" },
@@ -59,8 +63,8 @@ export default function DashboardSidebar() {
                     return (
                         <Link key={href} href={href}
                             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group ${active
-                                    ? "bg-primary/20 text-primary border border-primary/30"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                                ? "bg-primary/20 text-primary border border-primary/30"
+                                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                                 }`}>
                             <Icon className={`w-4 h-4 flex-shrink-0 ${active ? "text-primary" : "group-hover:text-foreground"}`} />
                             {label}

@@ -80,7 +80,14 @@ export default function BusinessPage() {
         if (!business || !form.rating) return;
         setSubmitting(true);
         setTimeout(() => {
-            addReview({ businessId: business.id, customerName: form.customerName, customerEmail: form.customerEmail, rating: form.rating, text: form.text });
+            addReview({
+                businessId: business.id,
+                customerName: form.customerName,
+                customerEmail: form.customerEmail,
+                rating: form.rating,
+                text: form.text,
+                source: "Direct"
+            });
             setSubmitted(true); setSubmitting(false);
             refresh();
         }, 800);
