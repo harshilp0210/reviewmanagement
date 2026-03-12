@@ -104,6 +104,7 @@ export interface ReviewRequestCampaign {
   templateBody: string;
   sendDelayHours: number;
   isActive: boolean;
+  sentCount?: number;
   locationId?: string;
   createdAt: string;
 }
