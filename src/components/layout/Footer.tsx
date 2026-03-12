@@ -29,7 +29,7 @@ export function Footer() {
                             >
                                 <Star className="h-4 w-4 text-white fill-white" />
                             </div>
-                            <span className="text-xl font-bold tracking-tight text-white">Openrize</span>
+                            <span className="text-xl font-bold tracking-tight text-white">ReviewManagement</span>
                         </Link>
 
                         <p className="text-lg leading-relaxed max-w-sm text-slate-400">
@@ -135,7 +135,7 @@ export function Footer() {
                 </div>
 
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-slate-500 text-xs font-medium uppercase tracking-[0.1em]">
-                    <p>&copy; {new Date().getFullYear()} Openrize. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} ReviewManagement. All rights reserved.</p>
                     <div className="flex gap-8">
                         <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy</Link>
                         <Link href="/terms-and-conditions" className="hover:text-white transition-colors">Terms</Link>

@@ -289,8 +289,54 @@ const SEED_ALERTS: Alert[] = [
 ];
 
 // ============================================================
+// SEED CAMPAIGNS (Automations)
+// ============================================================
+const SEED_CAMPAIGNS: ReviewRequestCampaign[] = [
+  {
+    id: "camp-s001",
+    businessId: "biz-001",
+    locationId: "loc-001",
+    name: "Post-Checkout Email",
+    channel: "email",
+    templateSubject: "How was your stay at The Stellar Bistro?",
+    templateBody: "Hi there! We hope you enjoyed your recent visit. If you have 60 seconds, we'd love to hear your feedback — it helps us improve and serve you better.",
+    sendDelayHours: 24,
+    isActive: true,
+    sentCount: 142,
+    createdAt: daysAgo(45),
+  },
+  {
+    id: "camp-s002",
+    businessId: "biz-001",
+    locationId: "loc-001",
+    name: "Post-Stay SMS Follow-up",
+    channel: "sms",
+    templateBody: "Thanks for staying with us! We'd love your feedback 🌟 Tap the link to leave a quick review: [REVIEW_LINK]",
+    sendDelayHours: 2,
+    isActive: true,
+    sentCount: 89,
+    createdAt: daysAgo(30),
+  },
+  {
+    id: "camp-s003",
+    businessId: "biz-001",
+    locationId: "loc-002",
+    name: "O'Hare Location — Email Campaign",
+    channel: "email",
+    templateSubject: "Tell us about your experience!",
+    templateBody: "Dear Guest, thank you for choosing our O'Hare location. Your opinion matters — please take a moment to share your experience with us.",
+    sendDelayHours: 48,
+    isActive: false,
+    sentCount: 23,
+    createdAt: daysAgo(15),
+  },
+];
+
+// ============================================================
 // STORAGE KEYS
 // ============================================================
+const KEY_INITIALIZED = "rms_initialized_v3";
+
 const KEY_USERS = "rms_users";
 const KEY_BUSINESSES = "rms_businesses";
 const KEY_REVIEWS = "rms_reviews";
@@ -299,7 +345,6 @@ const KEY_ALERTS = "rms_alerts";
 const KEY_CAMPAIGNS = "rms_campaigns";
 const KEY_LOCATIONS = "rms_locations";
 const KEY_COMPETITORS = "rms_competitors";
-const KEY_INITIALIZED = "rms_initialized_v2";
 
 // ============================================================
 // INIT
@@ -314,6 +359,7 @@ export function initStore() {
   localStorage.setItem(KEY_REVIEWS, JSON.stringify(generateReviews()));
   localStorage.setItem(KEY_TASKS, JSON.stringify(SEED_TASKS));
   localStorage.setItem(KEY_ALERTS, JSON.stringify(SEED_ALERTS));
+  localStorage.setItem(KEY_CAMPAIGNS, JSON.stringify(SEED_CAMPAIGNS));
   localStorage.setItem(KEY_INITIALIZED, "true");
 }
 
