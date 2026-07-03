@@ -1,77 +1,124 @@
-import { Metadata } from "next";
-import { CheckCircle2 } from "lucide-react";
-import { PageHeader } from "@/components/common/PageHeader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+"use client";
 
-export const metadata: Metadata = {
-    title: "Review Management Software Features | ReviewManagement",
-    description: "Explore the features of ReviewManagement software. Automated collection, monitoring, analytics, and more.",
-};
+import Link from "next/link";
+import { Mail, Phone, Sparkles, Users, LayoutGrid, FileText, Building, Clock, ArrowRight, Star } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 export default function FeaturesPage() {
     const features = [
         {
-            title: "Review Campaign Automation",
-            description: "Set up conversion-focused campaign sequences to request and collect reviews automatically.",
+            title: "Email Review Requests",
+            description: "Reach customers in their inbox with high-conversion templates and automated follow-up scheduling.",
+            icon: Mail
         },
         {
-            title: "Email & SMS Requests",
-            description: "Reach customers instantly on their preferred channel with high-deliverability email and text messages.",
+            title: "SMS Review Requests",
+            description: "Deliver request text campaigns directly to mobile devices for immediate feedback generation.",
+            icon: Phone
+        },
+        {
+            title: "Campaign Builder",
+            description: "Build custom sequences, style layouts to match your brand, and configure automated dispatch triggers.",
+            icon: Sparkles
         },
         {
             title: "Customer Management",
-            description: "Organize client lists, partition contact groups, and review message dispatch history seamlessly.",
+            description: "Organize client directories, partition contacts into target groups, and track review histories.",
+            icon: Users
         },
         {
-            title: "Agency Multi-Client Dashboard",
-            description: "Monitor and manage reputation campaigns across multiple accounts or franchises in one centralized view.",
+            title: "Review Dashboard",
+            description: "Monitor and respond to Google, Facebook, Yelp, and other listing reviews from one unified feed.",
+            icon: LayoutGrid
         },
         {
             title: "Reporting & Analytics",
-            description: "Generate detailed reputation insights and configure automated PDF report exports for stakeholders.",
+            description: "Analyze star rating trends, check conversion rates, and export automated reports.",
+            icon: FileText
         },
         {
-            title: "Review Performance Tracking",
-            description: "Track aggregate review volume, average star rating increases, and platform conversion rates in real-time.",
+            title: "Agency Multi-Client View",
+            description: "Separate client profiles and manage campaign permissions across multiple business locations.",
+            icon: Building
         },
+        {
+            title: "Automated Follow-Ups",
+            description: "Set up smart timers to resend request reminders to non-responders automatically, increasing volume.",
+            icon: Clock
+        }
     ];
 
     return (
-        <div className="flex flex-col min-h-screen">
-            <PageHeader
-                title="All-in-One Review Management Platform"
-                description="Everything you need to collect, manage, and improve your customer reviews."
-            />
+        <div className="bg-[#080B14] min-h-screen text-slate-300 relative overflow-hidden noise-overlay">
+            <div className="absolute inset-0 mesh-gradient opacity-80 pointer-events-none" />
 
-            <section className="container py-24 px-4 md:px-6 mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {features.map((feature, index) => (
-                        <Card key={index} className="border-border/50 shadow-sm hover:shadow-lg transition-all duration-300">
-                            <CardHeader className="space-y-4">
-                                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                                    <CheckCircle2 className="h-6 w-6 text-primary" />
+            {/* Header */}
+            <div className="bg-slate-950/20 py-16 text-center border-b border-slate-900 relative z-10">
+                <div className="container mx-auto px-6 lg:px-8 max-w-2xl space-y-4">
+                    <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-xs font-semibold text-violet-300 backdrop-blur-md">
+                        <Star className="w-3.5 h-3.5 fill-violet-400 text-violet-400" /> Platform Features
+                    </div>
+                    <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                        Everything You Need to Grow Online Trust
+                    </h1>
+                    <p className="text-slate-400 text-sm leading-relaxed">
+                        Explore our robust features designed to help local businesses and agencies automate review collection and improve conversions.
+                    </p>
+                </div>
+            </div>
+
+            {/* Grid */}
+            <section className="container mx-auto px-6 lg:px-8 py-20 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {features.map((feature, index) => {
+                        const Icon = feature.icon;
+                        return (
+                            <div 
+                                key={index} 
+                                className="glass-card rounded-2xl p-6 border border-white/5 hover:border-violet-500/30 transition-all text-slate-300 flex flex-col justify-between"
+                            >
+                                <div>
+                                    <div className="w-10 h-10 rounded-lg bg-violet-600/10 flex items-center justify-center text-violet-400 mb-4">
+                                        <Icon className="w-5 h-5" />
+                                    </div>
+                                    <h3 className="text-sm font-bold text-white mb-2">{feature.title}</h3>
+                                    <p className="text-slate-400 text-xs leading-relaxed mb-4">{feature.description}</p>
                                 </div>
-                                <CardTitle className="text-xl">{feature.title}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground leading-relaxed">
-                                    {feature.description}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    ))}
+                                <Link 
+                                    href="/demo" 
+                                    onClick={() => trackEvent("feature_click", { location: "features_page", feature: feature.title.toLowerCase() })}
+                                    className="text-xs font-bold text-violet-400 hover:text-violet-300 inline-flex items-center gap-1 group mt-2"
+                                >
+                                    Get started
+                                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                            </div>
+                        );
+                    })}
                 </div>
 
-                <div className="mt-24 text-center space-y-8 bg-muted/30 rounded-3xl p-12 border border-border/50">
-                    <h2 className="text-3xl font-bold tracking-tight">Ready to get started?</h2>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Join thousands of businesses who use ReviewManagement to grow their online reputation.
+                {/* Final Call to Action */}
+                <div className="mt-20 text-center space-y-6 bg-slate-950/40 rounded-3xl p-10 border border-white/5 max-w-4xl mx-auto shadow-sm backdrop-blur-md">
+                    <h2 className="text-2xl font-black text-white">Ready to automate your reputation growth?</h2>
+                    <p className="text-slate-400 text-xs max-w-xl mx-auto leading-relaxed">
+                        Start your 14-day free trial on any tier and see how ReviewManagement helps build long-term business trust.
                     </p>
-                    <Link href="/demo">
-                        <Button size="lg" className="px-8 shadow-lg">Start Free Trial</Button>
-                    </Link>
+                    <div className="flex justify-center gap-3">
+                        <Link 
+                            href="/register" 
+                            onClick={() => trackEvent("signup_click", { location: "features_footer" })}
+                            className="btn-primary px-6 py-2.5 rounded-full text-white font-bold text-xs"
+                        >
+                            Start Free Trial
+                        </Link>
+                        <Link 
+                            href="/demo" 
+                            onClick={() => trackEvent("book_demo_click", { location: "features_footer" })}
+                            className="px-6 py-2.5 border border-slate-800 bg-slate-950/40 text-slate-300 font-semibold rounded-full text-xs hover:border-violet-500/40 hover:bg-violet-950/10 transition-all"
+                        >
+                            Book Demo
+                        </Link>
+                    </div>
                 </div>
             </section>
         </div>
